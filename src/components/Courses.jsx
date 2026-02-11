@@ -200,7 +200,7 @@ export const Courses = () => {
                           <motion.div
                             className={`w-12 h-12 rounded-xl bg-gradient-to-r ${course.color} flex items-center justify-center mb-5 text-white shadow-lg`}
                             whileHover={{ rotate: 360, scale: 1.1 }}
-                            transition={{ duration: 0.6 }}
+                           // transition={{ duration: 0.6 }}
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.15 + 0.35, duration: 0.5 }}
@@ -242,8 +242,8 @@ export const Courses = () => {
                     {/* Visual accent on right */}
                     <motion.div
                       className={`hidden md:flex w-48 rounded-2xl bg-gradient-to-br ${course.gradient} border border-cyan-500/20 items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300`}
-                      animate={{ y: [0, 10, 0] }}
-                      transition={{ duration: 3, repeat: Infinity }}
+                     // animate={{ y: [0, 10, 0] }}
+                     // transition={{ duration: 3, repeat: Infinity }}
                       initial={{ opacity: 0, scale: 0.8, rotateY: -20 }}
                       animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                       transition={{ delay: index * 0.15 + 0.3, duration: 0.6 }}
@@ -293,7 +293,7 @@ export const Courses = () => {
                           <motion.div
                             className={`w-12 h-12 rounded-xl bg-gradient-to-r ${course.color} flex items-center justify-center mb-5 text-white shadow-lg`}
                             whileHover={{ rotate: 360, scale: 1.1 }}
-                            transition={{ duration: 0.6 }}
+                           // transition={{ duration: 0.6 }}
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.15 + 0.35, duration: 0.5 }}
@@ -334,8 +334,8 @@ export const Courses = () => {
 
                     <motion.div
                       className={`hidden md:flex w-48 rounded-2xl bg-gradient-to-br ${course.gradient} border border-cyan-500/20 items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-300`}
-                      animate={{ y: [0, 10, 0] }}
-                      transition={{ duration: 3, repeat: Infinity, delay: index * 0.2 }}
+                     // animate={{ y: [0, 10, 0] }}
+                      //transition={{ duration: 3, repeat: Infinity, delay: index * 0.2 }}
                       initial={{ opacity: 0, scale: 0.8, rotateY: 20 }}
                       animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                       transition={{ delay: index * 0.15 + 0.3, duration: 0.6 }}
