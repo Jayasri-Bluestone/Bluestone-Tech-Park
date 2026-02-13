@@ -1,147 +1,214 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   motion,
   useScroll,
   useTransform,
-  useMotionValue,
-  useSpring,
 } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Code2, Cloud, Database, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
+// --- ANIMATED TEXT HELPER ---
+const AnimatedText = ({ text, className }) => {
+  return (
+    <div className={`flex flex-wrap overflow-hidden ${className}`}>
+      {text.split("").map((char, index) => (
+        <motion.span
+          key={index}
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          transition={{
+            duration: 0.5,
+            delay: index * 0.02,
+            ease: [0.33, 1, 0.68, 1],
+          }}
+          className="inline-block"
+        >
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </div>
+  );
+};
+
+// --- COLORFUL CONTRAST GLASS CARD ---
+const GlassCard = ({ icon: Icon, title, desc, delay, rotate, yOffset, className, accentColor }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 100, rotate: rotate + 5 }}
+      whileInView={{ opacity: 1, y: 0, rotate: rotate }}
+      viewport={{ once: true }}
+      transition={{ 
+        duration: 0.8, 
+        delay, 
+        type: "spring", 
+        stiffness: 60 
+      }}
+      whileHover={{ 
+        y: -30, 
+        rotate: 0,
+        scale: 1.05,
+        zIndex: 50,
+        transition: { duration: 0.3, ease: "easeOut" } 
+      }}
+      whileTap={{ scale: 0.98 }}
+      style={{ translateY: yOffset }}
+      className={`w-full max-w-[380px] bg-white/80 backdrop-blur-2xl border-2 border-white/50 rounded-[2.5rem] p-8 shadow-[0_30px_60px_rgba(0,0,0,0.08)] cursor-pointer group mb-6 lg:mb-0 lg:absolute lg:right-0 ${className}`}
+    >
+      <div className="flex justify-between items-start mb-6">
+        <div className={`p-4 rounded-2xl text-white shadow-lg transition-transform group-hover:scale-110 duration-300 ${accentColor}`}>
+          <Icon size={32} strokeWidth={2.5} />
+        </div>
+        <div className="text-right">
+          <span className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Z# Evolution</span>
+          <span className="block text-[10px] font-bold text-blue-500 mt-1">v4.0.2</span>
+        </div>
+      </div>
+      
+      <h3 className="text-2xl font-black text-slate-900 mb-3 tracking-tighter uppercase">
+        {title}
+      </h3>
+      
+      <p className="text-sm text-slate-600 leading-relaxed font-semibold mb-8">
+        {desc}
+      </p>
+
+      <div className="flex items-center justify-between pt-6 border-t border-slate-200/50">
+        <div className="flex items-center gap-2">
+           <div className="flex -space-x-2">
+              <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white" />
+              <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-white" />
+           </div>
+           <span className="text-[10px] font-mono text-slate-500 font-bold">5k+ commits</span>
+        </div>
+        <div className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center transition-transform group-hover:translate-x-1">
+          <ArrowRight size={14} />
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 export const Hero = () => {
-  const { scrollY } = useScroll();
-
-  /* Parallax layers */
-  const y1 = useTransform(scrollY, [0, 600], [0, 140]);
-  const y2 = useTransform(scrollY, [0, 600], [0, -100]);
-
-  /* Mouse tilt */
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(mouseY, [-200, 200], [6, -6]), {
-    stiffness: 80,
-    damping: 20,
-  });
-  const rotateY = useSpring(useTransform(mouseX, [-200, 200], [-6, 6]), {
-    stiffness: 80,
-    damping: 20,
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
   });
 
-  const handleMouseMove = (e) => {
-    const { innerWidth, innerHeight } = window;
-    mouseX.set(e.clientX - innerWidth / 2);
-    mouseY.set(e.clientY - innerHeight / 2);
-  };
+  // Smooth stacking movement
+  const card1Y = useTransform(scrollYProgress, [0, 1], [0, -120]);
+  const card2Y = useTransform(scrollYProgress, [0, 1], [0, -220]);
+  const card3Y = useTransform(scrollYProgress, [0, 1], [0, -320]);
 
   return (
     <section
-      onMouseMove={handleMouseMove}
-      className="relative min-h-screen bg-[#0B0F1A] overflow-hidden flex items-center"
+      ref={containerRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white py-20 lg:py-0"
     >
-      {/* Grid */}
-      <div className="absolute inset-0 opacity-[0.06]">
-        <svg width="100%" height="100%">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#60A5FA" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+      {/* BACKGROUND IMAGE & MESH OVERLAY */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" 
+          alt="Tech background" 
+          className="w-full h-full object-cover opacity-[0.3]"
+        />
+        {/* Animated Mesh Gradients */}
+        <motion.div 
+          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 15, repeat: Infinity }}
+          className="absolute top-[-10%] right-[-5%] w-[70vw] h-[70vw] bg-blue-400/20 rounded-full blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
+          transition={{ duration: 20, repeat: Infinity }}
+          className="absolute bottom-[-10%] left-[-5%] w-[50vw] h-[50vw] bg-purple-400/20 rounded-full blur-[100px]" 
+        />
       </div>
 
-      {/* Background blobs */}
-      <motion.div
-        style={{ y: y1 }}
-        animate={{ rotate: [0, 360] }}
-        transition={{ duration: 80, repeat: Infinity, ease: "linear" }}
-        className="absolute -top-48 -left-48 w-[700px] h-[700px] bg-blue-600/25 rounded-full blur-[160px]"
-      />
-
-      <motion.div
-        style={{ y: y2 }}
-        animate={{ rotate: [360, 0] }}
-        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-350px] right-[-250px] w-[800px] h-[800px] bg-cyan-500/20 rounded-full blur-[180px]"
-      />
-
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-32 grid md:grid-cols-2 gap-20 items-center">
-        {/* Left */}
-        <div>
-          <span className="inline-block mb-6 px-4 py-2 text-sm font-semibold tracking-widest uppercase rounded-full bg-blue-500/10 text-blue-400">
-            Next-Gen Tech Park
-          </span>
-
-          <h1 className="text-5xl md:text-7xl font-extrabold leading-tight text-white">
-            Build the
-            <span className="block bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Future of Technology
+      <div className="max-w-7xl mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        
+        {/* LEFT CONTENT */}
+        <div className="lg:col-span-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-white border border-slate-200 shadow-sm w-fit mb-10"
+          >
+             <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+             </span>
+            <span className="text-[12px] font-black text-slate-900 tracking-widest uppercase">
+              NETWORK STABLE v2.0
             </span>
+            <ChevronRight size={14} className="text-slate-400" />
+          </motion.div>
+
+          <h1 className="text-7xl md:text-[4rem] font-black leading-[0.9] tracking-tighter text-slate-900 mb-10">
+            <AnimatedText text="RECODE" />
+            <motion.span 
+              className="block italic text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-pink-500 to-purple-600 py-3"
+            >
+              POSSIBLE...
+            </motion.span>
+            <AnimatedText text="GROW BEYOND!." />
           </h1>
 
-          <p className="mt-6 text-lg text-slate-300 max-w-xl">
-            Bluestone Tech Park empowers developers, startups, and enterprises
-            with cutting-edge education, digital solutions, and innovation-driven
-            ecosystems.
-          </p>
-
-          <div className="mt-10 flex flex-wrap gap-5">
-            <Link
-              to="/courses"
-              className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-cyan-500/40 transition-all"
-            >
-              Explore Courses
-              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-
-            <Link
-              to="/services"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl border border-white/20 text-white hover:bg-white/5 backdrop-blur transition-all"
-            >
-              View Services
-            </Link>
+          <div className="grid grid-cols-2 gap-10 mb-12 border-l-2 border-slate-100 pl-8">
+            <div>
+              <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-blue-600 mb-2">Efficiency</h4>
+              <p className="text-sm text-slate-800 font-bold leading-relaxed">High-performance architecture with zero-bottleneck CI/CD.</p>
+            </div>
+            <div>
+              <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-purple-600 mb-2">Scalability</h4>
+              <p className="text-sm text-slate-800 font-bold leading-relaxed">Dynamic load-balancing and auto-scaling infra logic.</p>
+            </div>
           </div>
+
+          <Link
+            to="/courses"
+            className="group px-14 py-6 bg-slate-900 text-white font-black rounded-[2rem] hover:bg-blue-600 transition-all flex items-center gap-4 w-fit shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
+          >
+            GET EARLY ACCESS
+            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+          </Link>
         </div>
 
-        {/* Right visual */}
-        <motion.div
-          style={{ rotateX, rotateY }}
-          className="relative perspective-[1200px]"
-        >
-          <div className="relative rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl border border-white/10 shadow-2xl p-8">
-            <div className="space-y-6">
-              <div className="h-4 w-32 rounded bg-blue-400/60" />
-              <div className="h-4 w-full rounded bg-white/20" />
-              <div className="h-4 w-5/6 rounded bg-white/20" />
-              <div className="h-4 w-4/6 rounded bg-white/20" />
-            </div>
+        {/* RIGHT CONTENT - COLORFUL STACK */}
+        <div className="lg:col-span-6 relative h-[750px] flex items-center justify-center lg:justify-end">
+           <GlassCard 
+              icon={Code2} 
+              title="Codebase" 
+              desc="Modular structure designed for enterprise-grade collaborative scaling." 
+              delay={0.2} 
+              rotate={-8}
+              yOffset={card1Y}
+              accentColor="bg-gradient-to-br from-blue-600 to-cyan-400"
+              className="lg:top-30"
+           />
+           
+           <GlassCard 
+              icon={Cloud} 
+              title="Cloud Engine" 
+              desc="Next-gen cloud deployment with native edge computing support." 
+              delay={0.4} 
+              rotate={4}
+              yOffset={card2Y}
+              accentColor="bg-gradient-to-br from-orange-500 to-yellow-400"
+              className="lg:top-[240px]"
+           />
 
-            <div className="mt-10 grid grid-cols-3 gap-4">
-              <div className="h-20 rounded-xl bg-blue-500/20" />
-              <div className="h-20 rounded-xl bg-cyan-500/20" />
-              <div className="h-20 rounded-xl bg-indigo-500/20" />
-            </div>
-          </div>
-
-          {/* Floating stats */}
-          <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute -top-8 -right-8 px-4 py-2 rounded-xl bg-white/10 backdrop-blur border border-white/15 text-white text-sm"
-          >
-            🚀 120+ Projects
-          </motion.div>
-
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 5, repeat: Infinity }}
-            className="absolute -bottom-8 -left-8 px-4 py-2 rounded-xl bg-white/10 backdrop-blur border border-white/15 text-white text-sm"
-          >
-            ⚡ Industry Ready
-          </motion.div>
-        </motion.div>
+           <GlassCard 
+              icon={Database} 
+              title="Data Vault" 
+              desc="Immutable data structures with ultra-low latency retrieval systems." 
+              delay={0.6} 
+              rotate={-4}
+              yOffset={card3Y}
+              accentColor="bg-gradient-to-br from-pink-600 to-rose-400"
+              className="lg:top-[360px]"
+           />
+        </div>
       </div>
     </section>
   );

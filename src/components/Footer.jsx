@@ -13,7 +13,7 @@ export const Footer = () => {
               to="/"
               className="text-2xl font-bold text-white tracking-tighter mb-6 block"
             >
-              BLUESTONE <span className="text-white">TECH PARK</span>
+              BLUESTONE <span className="text-white">TECHPARK</span>
             </Link>
             <p className="text-swhite leading-relaxed mb-6">
               Empowering businesses with cutting-edge technology and shaping the

@@ -7,7 +7,7 @@ const features = [
     title: "High-Speed Infrastructure",
     description: "Gigabit internet and state-of-the-art workstations.",
     icon: <Wifi className="w-8 h-8" />,
-    image: "https://images.unsplash.com/photo-1633356122544-f134324ef6db?auto=format&fit=crop&w=1080&q=80"
+    image: "https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=2031&auto=format&fit=crop"
   },
   {
     title: "Collaborative Spaces",
@@ -19,13 +19,13 @@ const features = [
     title: "Modern Labs",
     description: "Dedicated labs for IoT, VR/AR, and Robotics research.",
     icon: <Monitor className="w-8 h-8" />,
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1080&q=80"
+    image: "https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=2070&auto=format&fit=crop"
   },
   {
     title: "Recreation Zones",
     description: "Relax and recharge with our cafeteria and gaming zones.",
     icon: <Coffee className="w-8 h-8" />,
-    image: "https://images.unsplash.com/photo-1578182429518-180b50a9ad7e?auto=format&fit=crop&w=1080&q=80"
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1932&auto=format&fit=crop"
   },
 ];
 
@@ -54,10 +54,10 @@ export const TechParkFeatures = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-blue-950 mb-4">
-            Experience the <span className="text-blue-600">Bluestone Ecosystem</span>
+          <h2 className="text-4xl md:text-7xl italic font-bold text-black mb-4">
+            Experience the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600">Bluestone Ecosystem</span>
           </h2>
-          <p className="text-blue-700 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-600 text-lg max-w-2xl mx-auto">
             We provide more than just a workspace or a classroom. We offer a thriving ecosystem where technology meets creativity.
           </p>
         </motion.div>

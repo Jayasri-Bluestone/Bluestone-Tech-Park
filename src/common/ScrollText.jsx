@@ -1,31 +1,11 @@
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect, useRef } from "react";
+// components/ScrollWrapper.js
+"use client";
+import { ReactLenis } from '@studio-freight/react-lenis';
 
-gsap.registerPlugin(ScrollTrigger);
-
-export const ScrollText = () => {
-  const textRef = useRef(null);
-
-  useEffect(() => {
-    gsap.fromTo(
-      textRef.current,
-      { x: -200, opacity: 0 },
-      {
-        x: 0,
-        opacity: 1,
-        scrollTrigger: {
-          trigger: textRef.current,
-          start: "top 80%",
-          scrub: true,
-        },
-      }
-    );
-  }, []);
-
+export default function ScrollWrapper({ children }) {
   return (
-    <h2 ref={textRef} className="text-6xl font-bold">
-      Scroll Driven Motion
-    </h2>
+    <ReactLenis root options={{ lerp: 0.1, duration: 1.5, smoothWheel: true }}>
+      {children}
+    </ReactLenis>
   );
-};
+}
