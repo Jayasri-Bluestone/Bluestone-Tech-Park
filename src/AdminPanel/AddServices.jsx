@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
-import { Upload, X, CheckCircle2, AlertCircle, Search, Trash2, Loader2 } from 'lucide-react';
+import { Upload, Search, Trash2, Loader2, Edit3, X, Plus } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export const AddServices = () => {
-  const [formData, setFormData] = useState({
+  const initialForm = {
     title: "",
     description: "",
     icon_name: "Globe",
     image_base64: ""
-  });
-  
-  const [services, setServices] = useState([]); // List of existing services
+  };
+
+  const [formData, setFormData] = useState(initialForm);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // --- NEW STATE FOR EDITING ---
+  const [editingId, setEditingId] = useState(null);
 
-  // 1. Fetch existing services on load
   const fetchServices = async () => {
     try {
       const res = await fetch("http://localhost:5003/api/services");
@@ -28,9 +31,26 @@ export const AddServices = () => {
     }
   };
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
+  useEffect(() => { fetchServices(); }, []);
+
+  // --- ACTIVATE EDIT MODE ---
+  const startEdit = (service) => {
+    setEditingId(service.id);
+    setFormData({
+      title: service.title,
+      description: service.description,
+      icon_name: service.icon_name,
+      image_base64: service.image_base64
+    });
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // --- CANCEL EDIT MODE ---
+  const cancelEdit = () => {
+    setEditingId(null);
+    setFormData(initialForm);
+  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -44,41 +64,45 @@ export const AddServices = () => {
     reader.onload = () => setFormData({ ...formData, image_base64: reader.result });
   };
 
-  // 2. Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.image_base64) return toast.error('Please upload an image');
 
-    const loadingToast = toast.loading("Publishing service...");
+    const isEditing = editingId !== null;
+    const loadingToast = toast.loading(isEditing ? "Updating service..." : "Publishing service...");
+    
+    // Dynamic URL and Method
+    const url = isEditing 
+      ? `http://localhost:5003/api/services/${editingId}` 
+      : "http://localhost:5003/api/services";
+    const method = isEditing ? "PUT" : "POST";
+
     try {
-      const res = await fetch("http://localhost:5003/api/services", {
-        method: "POST",
+      const res = await fetch(url, {
+        method: method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (res.ok) {
-        toast.success('Service Published!', { id: loadingToast });
-        setFormData({ title: "", description: "", icon_name: "Globe", image_base64: "" });
-        fetchServices(); // Refresh list
+        toast.success(isEditing ? 'Service Updated!' : 'Service Published!', { id: loadingToast });
+        cancelEdit(); // Reset form and ID
+        fetchServices();
       }
     } catch (err) {
-      toast.error('Database connection failed.', { id: loadingToast });
+      toast.error('Operation failed.', { id: loadingToast });
     }
   };
 
-  // 3. Delete Handler
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
-    
+    if (!window.confirm("Are you sure?")) return;
     const deletingToast = toast.loading("Deleting...");
     try {
-      const res = await fetch(`http://localhost:5003/api/services/${id}`, {
-        method: 'DELETE'
-      });
+      const res = await fetch(`http://localhost:5003/api/services/${id}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success("Service removed", { id: deletingToast });
         setServices(services.filter(s => s.id !== id));
+        if (editingId === id) cancelEdit();
       }
     } catch (err) {
       toast.error("Delete failed", { id: deletingToast });
@@ -94,9 +118,18 @@ export const AddServices = () => {
       <Toaster />
       
       <div className="flex flex-col xl:flex-row gap-10">
-        {/* --- FORM SECTION --- */}
         <div className="flex-1 bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
-          <h2 className="text-3xl font-black text-slate-800 mb-8 italic uppercase tracking-tighter">Add Service</h2>
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-black text-slate-800 italic uppercase tracking-tighter">
+              {editingId ? "Edit Service" : "Add Service"}
+            </h2>
+            {editingId && (
+              <button onClick={cancelEdit} className="flex items-center gap-2 text-red-500 font-bold text-xs uppercase bg-red-50 px-4 py-2 rounded-xl">
+                <X size={14} /> Cancel Edit
+              </button>
+            )}
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <input 
@@ -140,17 +173,18 @@ export const AddServices = () => {
               </div>
             </div>
 
-            <button className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl">
-              Publish Service
+            <button className={`w-full py-5 text-white rounded-2xl font-black uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-2 ${editingId ? "bg-green-600 hover:bg-green-700" : "bg-slate-900 hover:bg-blue-600"}`}>
+              {editingId ? <Edit3 size={20}/> : <Plus size={20}/>}
+              {editingId ? "Update Changes" : "Publish Service"}
             </button>
           </form>
         </div>
 
-        {/* --- LIVE PREVIEW --- */}
+        {/* --- LIVE PREVIEW (Static during edit for context) --- */}
         <div className="w-full xl:w-[450px]">
           <div className="sticky top-10">
             <p className="text-center text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Frontend Live View</p>
-            <div className="relative h-[550px] w-full bg-black rounded-[3.5rem] overflow-hidden shadow-2xl ring-8 ring-white">
+            <div className={`relative h-[550px] w-full bg-black rounded-[3.5rem] overflow-hidden shadow-2xl ring-8 ${editingId ? 'ring-green-400' : 'ring-white'}`}>
               {formData.image_base64 ? (
                 <img src={formData.image_base64} className="w-full h-full object-cover opacity-70" alt="Preview" />
               ) : (
@@ -171,7 +205,7 @@ export const AddServices = () => {
         </div>
       </div>
 
-      {/* --- DELETE / MANAGEMENT SECTION --- */}
+      {/* --- MANAGEMENT SECTION --- */}
       <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
         <h2 className="text-2xl font-black text-slate-800 mb-6 italic uppercase tracking-tighter">Manage Existing Services</h2>
         {loading ? (
@@ -181,7 +215,7 @@ export const AddServices = () => {
             {services.map(service => {
               const Icon = LucideIcons[service.icon_name] || LucideIcons.Globe;
               return (
-                <div key={service.id} className="group relative bg-slate-50 rounded-3xl p-4 border border-slate-100 hover:border-blue-200 transition-all">
+                <div key={service.id} className={`group relative p-4 rounded-3xl border transition-all ${editingId === service.id ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-blue-200'}`}>
                   <div className="h-32 w-full mb-4 rounded-2xl overflow-hidden bg-slate-200">
                     <img src={service.image_base64} className="w-full h-full object-cover" alt="" />
                   </div>
@@ -189,17 +223,27 @@ export const AddServices = () => {
                     <Icon size={18} className="text-blue-600" />
                     <h4 className="font-bold text-slate-800 truncate text-sm uppercase">{service.title}</h4>
                   </div>
-                  <button 
-                    onClick={() => handleDelete(service.id)}
-                    className="absolute top-6 right-6 p-2 bg-red-500 text-white rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition-all active:scale-90"
-                    title="Delete Service"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  
+                  {/* Action Buttons */}
+                  <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                    <button 
+                      onClick={() => startEdit(service)}
+                      className="p-2 bg-blue-600 text-white rounded-xl shadow-lg active:scale-90"
+                      title="Edit Service"
+                    >
+                      <Edit3 size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(service.id)}
+                      className="p-2 bg-red-500 text-white rounded-xl shadow-lg active:scale-90"
+                      title="Delete Service"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               )
             })}
-            {services.length === 0 && <p className="text-slate-400 italic">No services published yet.</p>}
           </div>
         )}
       </div>

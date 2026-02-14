@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trash2, Download, MessageSquare, Mail, Phone, MessageCircle } from "lucide-react";
+import toast from "react-hot-toast"; // Ensure Toaster is rendered in your parent component
 
 export const AdminLeads = ({ leads, refresh }) => {
   // Filter for approved leads
@@ -27,11 +28,52 @@ export const AdminLeads = ({ leads, refresh }) => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this lead permanently?")) return;
-    try {
-      const res = await fetch(`http://localhost:5003/api/enquiry/${id}`, { method: 'DELETE' });
-      if (res.ok) refresh();
-    } catch (err) { console.error(err); }
+    // 1. Trigger the confirmation toast
+    toast((t) => (
+      <div className="flex flex-col gap-2">
+        <p className="text-sm font-bold text-slate-800">
+          Delete this lead? This cannot be undone.
+        </p>
+        <div className="flex gap-2">
+          {/* CONFIRM BUTTON */}
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id); // Remove the question
+              const loadingToast = toast.loading("Deleting...");
+
+              try {
+                const res = await fetch(`http://localhost:5003/api/enquiry/${id}`, { 
+                  method: 'DELETE' 
+                });
+
+                if (res.ok) {
+                  toast.success("Lead removed.", { id: loadingToast });
+                  refresh(); // Triggers the list update
+                } else {
+                  toast.error("Server error. Try again.", { id: loadingToast });
+                }
+              } catch (err) {
+                toast.error("Network error.", { id: loadingToast });
+              }
+            }}
+            className="bg-red-600 text-white px-3 py-1 rounded-lg text-xs font-bold uppercase"
+          >
+            Confirm
+          </button>
+
+          {/* CANCEL BUTTON */}
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-xs font-bold uppercase"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 5000,
+      position: 'top-center',
+    });
   };
 
   return (
@@ -63,43 +105,25 @@ export const AdminLeads = ({ leads, refresh }) => {
             <tbody className="divide-y divide-gray-50">
               {activeLeads.map((item) => (
                 <tr key={item.id} className="hover:bg-blue-50/50 transition-colors">
-                  {/* Username */}
-                  <td className="px-6 py-4 font-bold text-gray-700 uppercase italic">
-                    {item.name}
-                  </td>
-
-                  {/* Phone */}
-                  <td className="px-6 py-4 text-gray-600 font-medium">
-                    {item.phone}
-                  </td>
-
-                  {/* Email */}
-                  <td className="px-6 py-4 text-blue-600 font-medium">
-                    {item.email}
-                  </td>
-
-                  {/* Service Interest */}
+                  <td className="px-6 py-4 font-bold text-gray-700 uppercase italic">{item.name}</td>
+                  <td className="px-6 py-4 text-gray-600 font-medium">{item.phone}</td>
+                  <td className="px-6 py-4 text-blue-600 font-medium">{item.email}</td>
                   <td className="px-6 py-4">
                     <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
                       {item.service || 'General'}
                     </span>
                   </td>
-
-                  {/* Messages */}
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 text-gray-500 text-sm max-w-[200px] truncate" title={item.message}>
                       <MessageSquare size={14} className="flex-shrink-0" />
                       {item.message || "No message provided"}
                     </div>
                   </td>
-
-                  {/* Actions: WhatsApp, Mail, Delete */}
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div className="flex gap-2 justify-center">
                       <a 
                         href={`https://wa.me/${item.phone.replace(/\D/g, '')}`} 
-                        target="_blank" 
-                        rel="noreferrer"
+                        target="_blank" rel="noreferrer"
                         className="p-2 bg-green-50 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all"
                         title="WhatsApp"
                       >

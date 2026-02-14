@@ -8,23 +8,26 @@ const contactCards = [
   {
     icon: <MapPin className="w-6 h-6" />,
     title: "Location",
-    content: "123 Innovation Drive, Bluestone Tech Park, Silicon Valley, CA 94000",
+    content: "Renaissance Terrace, 126 L, opposite to Bishop Appasamy College, Race Course, Gopalapuram, Coimbatore, Tamil Nadu 641018",
+    // Google Maps Search Link
+    link: "https://www.google.com/maps/search/?api=1&query=Bluestone+Tech+Park+Coimbatore",
     gradient: "from-blue-500 to-blue-600",
-    color: "bg-blue-500",
   },
   {
     icon: <Phone className="w-6 h-6" />,
     title: "Phone",
-    content: "+1 (555) 123-4567",
+    content: "+91 70926 14666",
+    // tel: scheme for dialer
+    link: "tel:+917092614666", 
     gradient: "from-cyan-400 to-cyan-500",
-    color: "bg-cyan-500",
   },
   {
     icon: <Mail className="w-6 h-6" />,
     title: "Email",
-    content: "hello@bluestonetech.com",
+    content: "info@bluestonetechpark.com",
+    // mailto: scheme for email client
+    link: "mailto:info@bluestonetechpark.com",
     gradient: "from-sky-400 to-sky-500",
-    color: "bg-sky-500",
   }
 ];
 
@@ -245,95 +248,31 @@ useEffect(() => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 
-          {/* Contact Info Cards - Left Side */}
-
+        {/* Contact Info Cards - Left Side */}
           <div className="space-y-4">
-
             {contactCards.map((card, index) => (
-
-              <motion.div
-
+              <motion.a
                 key={index}
-
-                initial={{ opacity: 0, x: -50 }}
-
-                whileInView={{ opacity: 1, x: 0 }}
-
-                viewport={{ once: true }}
-
-                transition={{ delay: index * 0.1 }}
-
+                href={card.link}
+                target={card.title === "Location" ? "_blank" : "_self"}
+                rel="noopener noreferrer"
+                className="group relative block cursor-pointer"
                 onMouseEnter={() => setHovered(index)}
-
                 onMouseLeave={() => setHovered(null)}
-
-                className="group relative"
-
               >
-
-                <motion.div
-
-                  className={`absolute inset-0 bg-gradient-to-r ${card.gradient} rounded-2xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300`}
-
-                />
-
-               
-
-                <div className="relative bg-gradient-to-br from-white to-gray-50 border border-gray-200 p-6 rounded-2xl hover:border-blue-300 shadow-md hover:shadow-xl transition-all duration-300">
-
+                <div className="relative bg-gradient-to-br from-white to-gray-50 border border-gray-200 p-6 rounded-2xl group-hover:border-blue-300 shadow-md group-hover:shadow-xl transition-all duration-300">
                   <div className="flex items-start gap-4">
-
-                    <motion.div
-
-                      className={`w-14 h-14 rounded-xl ${card.color} flex items-center justify-center text-white flex-shrink-0 shadow-lg`}
-
-                      whileHover={{ scale: 1.15, rotate: 360 }}
-
-                      transition={{ duration: 0.6 }}
-
-                    >
-
+                    <div className={`w-14 h-14 rounded-xl ${card.gradient} bg-gradient-to-br flex items-center justify-center text-white flex-shrink-0 shadow-lg`}>
                       {card.icon}
-
-                    </motion.div>
-
-                    <div className="flex-1 min-w-0">
-
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{card.title}</h3>
-
-                      <p className="text-gray-700 text-sm leading-relaxed break-words">
-
-                        {card.content}
-
-                      </p>
-
                     </div>
-
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">{card.title}</h3>
+                      <p className="text-gray-700 text-sm leading-relaxed">{card.content}</p>
+                    </div>
                   </div>
-
-                 
-
-                  {hovered === index && (
-
-                    <motion.div
-
-                      layoutId="hoverLine"
-
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full"
-
-                      transition={{ type: "spring", bounce: 0.2 }}
-
-                    />
-
-                  )}
-
                 </div>
-
-              </motion.div>
-
+              </motion.a>
             ))}
-
-
 
             {/* Benefits Section */}
 

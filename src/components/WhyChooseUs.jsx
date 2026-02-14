@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { TrendingUp, Users, Award, Briefcase, ArrowRight } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 const benefits = [
   {
@@ -31,6 +32,7 @@ const benefits = [
 
 export const WhyChooseUs = () => {
   const containerRef = useRef(null);
+  const navigate = useNavigate();
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -72,7 +74,7 @@ export const WhyChooseUs = () => {
             className="text-4xl sm:text-5xl md:text-7xl italic font-black text-slate-900 mt-6 md:mt-8 leading-[1.1] tracking-tight"
           >
             Your Path to <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 italic">Global Success</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 italic">Global Success</span>
           </motion.h2>
         </div>
 
@@ -104,16 +106,16 @@ export const WhyChooseUs = () => {
                     {benefit.title}
                   </h3>
 
-                  <p className="text-white/80 text-base md:text-lg leading-relaxed mb-8 md:mb-10 font-medium max-w-sm">
+                  <p className="text-black/80 text-base md:text-lg leading-relaxed mb-8 md:mb-10 font-medium max-w-sm">
                     {benefit.description}
                   </p>
-
-                  <motion.button 
-                    whileHover={{ x: 5 }}
-                    className="mt-auto flex items-center gap-2 text-white font-black text-[10px] md:text-xs uppercase tracking-widest border-b border-white/40 pb-1 hover:border-white transition-all"
-                  >
-                    Enrollment Guide <ArrowRight size={14} />
-                  </motion.button>
+<motion.button 
+      onClick={() => navigate('/contact')}
+      whileHover={{ x: 5 }}
+      className="mt-auto flex items-center gap-2 text-white font-black text-[10px] md:text-xs uppercase tracking-widest border-b border-white/40 pb-1 hover:border-white transition-all"
+    >
+      Enrollment Guide <ArrowRight size={14} />
+    </motion.button>
                 </div>
 
                 {/* Big Background Number Reveal - Scaled down for mobile */}

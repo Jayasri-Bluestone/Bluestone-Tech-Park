@@ -51,11 +51,11 @@ export const Navbar = () => {
         
         {/* Logo Section - Shrinks slightly on mobile to save space */}
         <Link to="/" className="flex items-center gap-2 md:gap-3 z-[110]">
-          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border-2 border-blue-600 shadow-sm">
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden shadow-sm">
             <img src={Logo} alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="text-lg md:text-xl font-black text-blue-600 italic tracking-tighter leading-none">
-            BLUESTONE <span className="text-black">TECHPARK</span>
+            BLUESTONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-blue-600">TECHPARK</span>
           </span>
         </Link>
 

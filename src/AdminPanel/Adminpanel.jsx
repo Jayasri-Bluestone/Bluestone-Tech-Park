@@ -14,6 +14,7 @@ import { AddCourses } from "./AddCourses";
 import { LoginForm } from "./LoginForm";
 import { AdminSettings } from "./AdminSettings";
 import { CategorySettings } from "./CategorySetting";
+import { MediaManagement } from "./AdminMedia";
 
 export const AdminPanel = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ export const AdminPanel = () => {
     { name: "Categories", path: "/admin/categories", icon: <Users size={20} />, color: "text-purple-400" },
     { name: "Add Services", path: "/admin/services", icon: <PlusCircle size={20} />, color: "text-cyan-400" },
     { name: "Add Courses", path: "/admin/courses", icon: <BookOpen size={20} />, color: "text-pink-400" },
+    { name: "Media Management", path: "/admin/media", icon: <Settings size={20} />, color: "text-slate-400" },
     { name: "Admin Settings", path: "/admin/settings", icon: <Settings size={20} />, color: "text-slate-400" },
   ];
 
@@ -134,6 +136,7 @@ export const AdminPanel = () => {
             <Route path="/categories" element={<CategorySettings />} />
             <Route path="/services" element={<AddServices />} />
             <Route path="/courses" element={<AddCourses />} />
+            <Route path="/media" element={<MediaManagement />} />
             <Route path="/settings" element={<AdminSettings />} />
           </Routes>
         </div>
