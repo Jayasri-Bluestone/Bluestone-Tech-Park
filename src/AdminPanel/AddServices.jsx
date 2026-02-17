@@ -21,7 +21,7 @@ export const AddServices = () => {
 
   const fetchServices = async () => {
     try {
-      const res = await fetch("http://localhost:5003/api/services");
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services");
       const data = await res.json();
       setServices(data);
     } catch (err) {
@@ -73,8 +73,8 @@ export const AddServices = () => {
     
     // Dynamic URL and Method
     const url = isEditing 
-      ? `http://localhost:5003/api/services/${editingId}` 
-      : "http://localhost:5003/api/services";
+      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/services/${editingId}` 
+      : "https://bluestoneinternationalpreschool.com/techpark_api/api/services";
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -98,7 +98,7 @@ export const AddServices = () => {
     if (!window.confirm("Are you sure?")) return;
     const deletingToast = toast.loading("Deleting...");
     try {
-      const res = await fetch(`http://localhost:5003/api/services/${id}`, { method: 'DELETE' });
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/services/${id}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success("Service removed", { id: deletingToast });
         setServices(services.filter(s => s.id !== id));

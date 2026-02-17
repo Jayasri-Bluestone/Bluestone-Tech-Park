@@ -13,7 +13,7 @@ export const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch("http://localhost:5003/api/services");
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services");
         const data = await res.json();
         setDbServices(data);
       } catch (err) {

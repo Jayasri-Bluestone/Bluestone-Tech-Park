@@ -9,8 +9,8 @@ export const AdminEnquiry = ({ leads, refresh }) => {
   // 1. The actual API logic
   const executeAction = async (id, type) => {
     const url = type === 'move' 
-      ? `http://localhost:5003/api/enquiry/move/${id}`
-      : `http://localhost:5003/api/enquiry/${id}`;
+      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/move/${id}`
+      : `https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/${id}`;
     
     const method = type === 'move' ? 'PATCH' : 'DELETE';
     const loadingToast = toast.loading(type === 'move' ? "Approving lead..." : "Deleting...");

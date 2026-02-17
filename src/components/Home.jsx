@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo, memo } from "react";
 import {
   motion,
   useScroll,
@@ -13,10 +13,10 @@ import { Link } from "react-router-dom";
 
 import { ReactLenis } from "lenis/react";
 import {
-  ChevronLeft, Zap, ShieldCheck, Cpu, Leaf, Shield, Play, Database,
-  Layout, ArrowUpRight, Building2, ArrowRight,
+  Cpu,  Database,
+  Layout, ArrowRight,
   MousePointer2, Loader2,
-  ChevronRight, Users, Briefcase, TrendingUp, Code, Monitor, Globe, Smartphone, BarChart, PenTool, Cloud, Sparkles
+  ChevronRight,  Code, Smartphone, 
 } from "lucide-react";
 import { TechParkFeatures } from "./TechParkFeatures";
 import { Contact } from "./Contact";
@@ -24,54 +24,9 @@ import { Services } from "./Services";
 import * as LucideIcons from 'lucide-react';
 
 /* ---------------- DATA ---------------- */
-// --- DATA ---
 
 
 
-const courses = [
-  {
-    title: "Fullstack Development",
-    category: "Development",
-    description: "Master both frontend and backend technologies including React, Node.js, and databases.",
-    icon: <Code />,
-    color: "from-blue-500 to-blue-600",
-    gradient: "from-blue-500/20 to-blue-600/20",
-  },
-  {
-    title: "Front-end React JS",
-    category: "Development",
-    description: "Deep dive into modern React, Hooks, Redux, and building interactive UIs.",
-    icon: <Layout />,
-    color: "from-cyan-500 to-cyan-600",
-    gradient: "from-cyan-500/20 to-cyan-600/20",
-  },
-  {
-    title: "Flutter Mobile Dev",
-    category: "Mobile",
-    description: "Build beautiful native apps for iOS and Android with a single codebase using Flutter.",
-    icon: <Smartphone />,
-    color: "from-blue-600 to-blue-700",
-    gradient: "from-blue-600/20 to-blue-700/20",
-  },
-  {
-    title: "Digital Marketing",
-    category: "Marketing",
-    description: "Learn SEO, SEM, content strategy, and social media analytics to grow businesses.",
-    icon: <MousePointer2 />,
-    color: "from-sky-500 to-sky-600",
-    gradient: "from-sky-500/20 to-sky-600/20",
-  },
-  {
-    title: "No-Code: Framer",
-    category: "No-Code",
-    description: "Design and publish stunning websites without writing a single line of code.",
-    icon: <Layout />,
-    color: "from-blue-400 to-blue-500",
-    gradient: "from-blue-400/20 to-blue-500/20",
-  },
-];
-
-const categories = ["All", "Development", "Mobile", "Marketing", "No-Code"];
 
 // --- ANIMATION VARIANTS ---
 const fadeInUp = {
@@ -80,6 +35,8 @@ const fadeInUp = {
   viewport: { once: true },
   transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
 };
+
+
 
 
 //Hero Component
@@ -98,7 +55,7 @@ const Hero = () => {
   useEffect(() => {
     const getHeroAssets = async () => {
       try {
-        const response = await fetch("http://localhost:5003/api/media/hero");
+        const response = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/media/hero");
         const data = await response.json();
         
         if (Array.isArray(data) && data.length > 0) {
@@ -133,6 +90,8 @@ const Hero = () => {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
+
+  
 
   return (
     <motion.div 
@@ -194,7 +153,7 @@ const Hero = () => {
         </motion.div>
 
         {/* The Orbital Interface */}
-        <div className="relative z-10 w-[300px] h-[300px] sm:w-[450px] sm:h-[450px] lg:w-[550px] lg:h-[550px] flex items-center justify-center">
+        <div className="relative z-10 w-[300px] h-[300px] sm:w-[470px] sm:h-[470px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
           
           <motion.div 
             animate={{ rotate: 360 }} 
@@ -226,10 +185,10 @@ const Hero = () => {
                     onHoverStart={() => setActiveCard(item)}
                     onHoverEnd={() => setActiveCard(null)}
                     onClick={() => setActiveCard(item === activeCard ? null : item)}
-                    className="w-full md:h-full h-[70px] bg-white rounded-2xl sm:rounded-[2rem] p-1 shadow-xl border border-white hover:border-blue-400 overflow-hidden group"
+                    className="w-full md:h-full h-[100px] bg-white rounded-2xl sm:rounded-[2rem] p-1 shadow-xl border border-white hover:border-blue-400 overflow-hidden group"
                   >
                     <div className="relative w-full h-full  rounded-xl sm:rounded-[1.7rem] overflow-hidden">
-                      <img src={item.img} alt={item.title} className="w-full md:h-full h-[70px] object-cover" />
+                      <img src={item.img} alt={item.title} className="w-full md:h-full h-[100px] object-cover" />
                       <div className={`absolute inset-0 bg-gradient-to-t ${item.color} opacity-40`} />
                       <div className="absolute bottom-2 left-0 right-0 text-center">
                         <span className="text-[8px] sm:text-[10px] font-black text-white uppercase">{item.title}</span>
@@ -334,6 +293,10 @@ const TimelineSection = ({ phase, index, isEven }) => {
   );
 };
 
+
+
+//Timeline Component
+
 export const InnovationTimeline = () => {
   const targetRef = useRef(null);
   const [dbPhases, setDbPhases] = useState([]);
@@ -344,7 +307,7 @@ export const InnovationTimeline = () => {
     const fetchTimeline = async () => {
       try {
         // Matches "timeline media" from your DB screenshot
-        const response = await fetch("http://localhost:5003/api/media/timeline");
+        const response = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/media/timeline");
         const data = await response.json();
 
         if (Array.isArray(data)) {
@@ -408,6 +371,10 @@ export const InnovationTimeline = () => {
     </section>
   );
 };
+
+
+
+
 
 /* ---------------- WAABI-INSPIRED SIMULATION SECTION ---------------- */
 export const SimulationSection = () => {
@@ -587,7 +554,7 @@ export const EcosystemGrid = () => {
     const fetchEcosystem = async () => {
       try {
         // Fetching "campus ecosystem media" (encoded with %20)
-        const response = await fetch("http://localhost:5003/api/media/campus ecosystem");
+        const response = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/media/campus ecosystem");
         const data = await response.json();
 
         if (Array.isArray(data)) {
@@ -682,6 +649,10 @@ export const EcosystemGrid = () => {
 };
 
 
+
+
+//Academy Section
+
 export const AcademySection = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -689,7 +660,7 @@ export const AcademySection = () => {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        const res = await fetch("http://localhost:5003/api/courses"); 
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses"); 
         const data = await res.json();
         setCourses(data);
       } catch (err) {
@@ -804,46 +775,6 @@ export const AcademySection = () => {
 
 
 
-export const Btm = () => {
-  return (
-  <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mt-20"
-        >
-          <div className="inline-block bg-gradient-to-r from-cyan-400 via-blue-300 to-blue-500 rounded-2xl p-8 max-w-2xl">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="inline-block mb-4"
-            >
-              <MessageCircle className="w-12 h-12 text-cyan-600" />
-            </motion.div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-3">Ready to Connect?</h3>
-            <p className="text-gray-700 mb-6">
-              Whether it's a quick question or a full project discussion, we're here to help you succeed.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="px-8 py-3 bg-pink-500 text-white font-bold hover:bg-white hover:text-pink-600 rounded-xl hover:shadow-lg hover:shadow-blue-400/50 transition-all"
-              >
-                Start a Project
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="px-8 py-3 border border-black text-pink-600 font-bold rounded-xl hover:border-blue-400 hover:text-blue-700 hover:bg-blue-50 transition-all"
-              >
-                Schedule a Call
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
-          );
-};
-
-
 /* ---------------- MAIN ---------------- */
 
 export default function BluestoneExperience() {
@@ -869,18 +800,13 @@ export default function BluestoneExperience() {
     />
 
   </div>
-  {/* --------------------------------------------- */}
 
   <Hero />
-  {/* <ScrollZoomBenefits /> */}
   <TechParkFeatures/>
   <InnovationTimeline />
-  {/* <CampusStack /> */}
-<SimulationSection/>
-  {/* NEW SECTIONS */}
+  <SimulationSection/>
   <Services />
   <EcosystemGrid />
-  {/* <PerformanceSection /> */}
   <AcademySection />
   <Contact/>
 

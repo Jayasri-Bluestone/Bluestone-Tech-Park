@@ -9,7 +9,7 @@ export const AdminSettings = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch("http://localhost:5003/api/admin/profile")
+        fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/admin/profile")
             .then(res => res.json())
             .then(data => setUsername(data.username));
     }, []);
@@ -22,7 +22,7 @@ export const AdminSettings = () => {
 
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:5003/api/admin/update", {
+            const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/admin/update", {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, newPassword })

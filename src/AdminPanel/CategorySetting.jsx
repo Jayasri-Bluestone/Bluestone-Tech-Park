@@ -15,7 +15,7 @@ export const CategorySettings = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("http://localhost:5003/api/categories");
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/categories");
       const data = await res.json();
       setCategories(data);
     } catch (err) {
@@ -37,7 +37,7 @@ export const CategorySettings = () => {
     if (!newCategory.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5003/api/categories", {
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/categories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategory })
@@ -55,7 +55,7 @@ export const CategorySettings = () => {
     if (!editValue.trim()) return;
     const t = toast.loading("Saving...");
     try {
-      const res = await fetch(`http://localhost:5003/api/categories/${id}`, {
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/categories/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: editValue })
@@ -73,7 +73,7 @@ export const CategorySettings = () => {
     if (!targetCat) return;
     const t = toast.loading("Deleting...");
     try {
-      const res = await fetch(`http://localhost:5003/api/categories/${targetCat.id}`, { 
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/categories/${targetCat.id}`, { 
         method: "DELETE" 
       });
       if (res.ok) {

@@ -42,7 +42,7 @@ export const AdminLeads = ({ leads, refresh }) => {
               const loadingToast = toast.loading("Deleting...");
 
               try {
-                const res = await fetch(`http://localhost:5003/api/enquiry/${id}`, { 
+                const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/${id}`, { 
                   method: 'DELETE' 
                 });
 

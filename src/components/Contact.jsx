@@ -46,7 +46,7 @@ useEffect(() => {
   const fetchCategories = async () => {
     try {
       // Fetch from your NEW categories endpoint
-      const res = await fetch("http://localhost:5003/api/categories");
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/categories");
       const data = await res.json();
       setCategories(data);
       

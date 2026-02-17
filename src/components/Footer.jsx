@@ -105,7 +105,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-blue-800/50 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
           <p>
-            &copy; {new Date().getFullYear()} Bluestone Tech Park. All rights reserved.
+            &copy; {new Date().getFullYear()} Bluestone Tech Park. All rights reserved. v1.0.0
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

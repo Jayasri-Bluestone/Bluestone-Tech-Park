@@ -42,7 +42,7 @@ export const AdminPanel = () => {
   // 3. Data Fetching
   const fetchLeads = async () => {
     try {
-      const res = await fetch("http://localhost:5003/api/leads");
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/leads");
       const data = await res.json();
       setLeads(data);
     } catch (err) { 

@@ -1,15 +1,19 @@
 import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
-import { Hero } from "./components/Hero";
 import { Services } from "./components/Services";
 import { WhyChooseUs } from "./components/WhyChooseUs";
 import { TechParkFeatures } from "./components/TechParkFeatures";
 import { Courses } from "./components/Courses";
 import { Contact } from "./components/Contact";
 import { Footer } from "./components/Footer";
-import BluestoneExperience from "./components/Home";
+//import BluestoneExperience from "./components/Home";
 import { AdminPanel } from "./AdminPanel/Adminpanel";
+import { Hero } from "./components/Hero";
+import { InnovationTimeline } from "./components/Timeline";
+import { SimulationSection } from "./components/Simul";
+import { EcosystemGrid } from "./components/Ecosystem";
+import { AcademySection } from "./components/Academy";
 
 
 // Scroll to top on route change
@@ -40,12 +44,14 @@ const Layout = ({ children }) => {
 // Component Composition for Routes
 const HomePage = () => (
   <>
-    <Hero />
-    <TechParkFeatures />
-    <WhyChooseUs/>
-    <Services />
-    <Courses />
-    <Contact />
+      <Hero />
+      <TechParkFeatures/>
+      <InnovationTimeline />
+      <SimulationSection/>
+      <Services />
+      <EcosystemGrid />
+      <AcademySection />
+      <Contact/>
   </>
 );
 
@@ -80,7 +86,7 @@ export default function App() {
       <ScrollToTop />
       <Layout>
         <Routes>
-          <Route path="/" element={<BluestoneExperience />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/courses" element={<CoursesPage />} />

@@ -21,7 +21,7 @@ export const TechParkFeatures = () => {
     const getFeatures = async () => {
       try {
         // CHANGED: Fetching from the 'features' category specifically
-        const response = await fetch("http://localhost:5003/api/media/features");
+        const response = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/media/features");
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {

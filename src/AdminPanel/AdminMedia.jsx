@@ -25,7 +25,7 @@ export const MediaManagement = () => {
   // --- FETCH TABS ---
   const fetchSections = async () => {
     try {
-      const res = await fetch(`http://localhost:5003/api/sections`);
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/sections`);
       const data = await res.json();
       setSections(data);
       if (data.length > 0 && !activeTab) setActiveTab(data[0].name);
@@ -43,7 +43,7 @@ export const MediaManagement = () => {
   // --- API: FETCH ---
   const fetchMedia = async () => {
     try {
-      const res = await fetch(`http://localhost:5003/api/media/${activeTab}`);
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/media/${activeTab}`);
       const data = await res.json();
       setMediaList(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -62,7 +62,7 @@ export const MediaManagement = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Permanently delete this media?")) return;
     try {
-      const res = await fetch(`http://localhost:5003/api/media/delete/${id}`, { 
+      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/media/delete/${id}`, { 
         method: "DELETE" 
       });
       if (res.ok) {
@@ -139,8 +139,8 @@ export const MediaManagement = () => {
     };
 
     const endpoint = editingId 
-      ? `http://localhost:5003/api/media/update/${editingId}` 
-      : "http://localhost:5003/api/media/upload";
+      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/media/update/${editingId}` 
+      : "https://bluestoneinternationalpreschool.com/techpark_api/api/media/upload";
 
     try {
       const res = await fetch(endpoint, {

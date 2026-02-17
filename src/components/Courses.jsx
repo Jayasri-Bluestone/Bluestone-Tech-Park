@@ -23,7 +23,7 @@ export const Courses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch("http://localhost:5003/api/courses");
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses");
         const data = await res.json();
         setDbCourses(data);
       } catch (err) {

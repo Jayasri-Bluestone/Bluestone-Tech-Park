@@ -20,7 +20,7 @@ export const AddCourses = () => {
 
   const fetchList = async () => {
     try {
-      const res = await fetch("http://localhost:5003/api/courses");
+      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses");
       const data = await res.json();
       setCourses(data);
     } catch (err) {
@@ -55,8 +55,8 @@ export const AddCourses = () => {
 
     // Switch between PUT (Update) and POST (Create)
     const url = isEditing 
-      ? `http://localhost:5003/api/courses/${editingId}` 
-      : "http://localhost:5003/api/courses";
+      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/courses/${editingId}` 
+      : "https://bluestoneinternationalpreschool.com/techpark_api/api/courses";
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -81,7 +81,7 @@ export const AddCourses = () => {
   const deleteCourse = async (id) => {
     if(!window.confirm("Delete this course?")) return;
     const deleting = toast.loading("Deleting...");
-    const res = await fetch(`http://localhost:5003/api/courses/${id}`, { method: 'DELETE' });
+    const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/courses/${id}`, { method: 'DELETE' });
     if(res.ok) {
       toast.success("Course deleted", { id: deleting });
       if (editingId === id) cancelEdit();
