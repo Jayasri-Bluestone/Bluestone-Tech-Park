@@ -27,8 +27,8 @@ export const TechParkFeatures = () => {
         if (Array.isArray(data) && data.length > 0) {
           const formatted = data.map((item, index) => ({
             // If your DB title is NULL (as seen in your snippet), we provide fallbacks
-            title: item.title || getDefaultTitle(index),
-            description: item.description || getDefaultDesc(index),
+            title: getDefaultTitle(index),
+            description: getDefaultDesc(index),
             icon: getIcon(index),
             image: item.image_url || item.image_data 
           }));

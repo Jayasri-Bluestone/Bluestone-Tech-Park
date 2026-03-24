@@ -58,7 +58,7 @@ export const SimulationSection = () => {
         {/* SCANNING LINE EFFECT - Accelerated */}
         <motion.div 
           style={{ y: scanLineY, translateZ: 0 }} 
-          className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent z-10 will-change-transform transform-gpu"
+          className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent z-10 will-change-transform transform-gpu"
         />
 
         <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">

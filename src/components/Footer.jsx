@@ -57,6 +57,8 @@ export const Footer = () => {
               <li><Link to="/services" className="hover:text-white transition-colors">Services</Link></li>
               <li><Link to="/courses" className="hover:text-white transition-colors">Courses</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+              <li><Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+
             </ul>
           </div>
 
@@ -67,7 +69,7 @@ export const Footer = () => {
               <li className="flex items-start gap-3 group">
                 <MapPin size={20} className="text-blue-400 shrink-0 group-hover:text-white transition-colors" />
                 <a 
-                  href="https://maps.google.com/?q=Renaissance+Terrace+Coimbatore" 
+                  href="https://maps.app.goo.gl/xfKUMyRBm5ZFvV2c7" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors text-sm leading-relaxed"

@@ -1,16 +1,25 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, User, ShieldCheck, ArrowRight } from "lucide-react";
+import { Captcha } from "../common/Captcha";
 
 export const LoginForm = ({ onLogin }) => {
   const [loginData, setLoginData] = useState({ user: "", pass: "" });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [currentCaptcha, setCurrentCaptcha] = useState("");
 
   const handleLogin = (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+
+    if (captchaInput !== currentCaptcha) {
+      setError("Incorrect captcha code. Please try again.");
+      setIsLoading(false);
+      return;
+    }
 
     // Mimicking a slight delay for realism
     setTimeout(() => {
@@ -78,6 +87,22 @@ export const LoginForm = ({ onLogin }) => {
                   required
                 />
               </div>
+            </div>
+
+            {/* Captcha Section */}
+            <div className="relative space-y-4">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1 mb-2 block">Security Check</label>
+              <div className="bg-slate-900 rounded-2xl p-4">
+                <Captcha onCodeChange={setCurrentCaptcha} />
+              </div>
+              <input 
+                type="text" 
+                placeholder="Enter characters" 
+                className={`w-full px-4 py-4 bg-slate-50 border rounded-2xl outline-none transition-all text-slate-700 font-medium ${error && captchaInput !== currentCaptcha ? 'border-red-400' : 'border-slate-200 focus:border-blue-600 focus:bg-white'}`}
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value)}
+                required
+              />
             </div>
 
             {/* Error Message */}

@@ -43,7 +43,7 @@ export const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-lg py-3 border-b border-slate-100"
+          ? "bg-white/80 backdrop-blur-xl shadow-lg py-3"
           : "bg-transparent py-5 md:py-8"
       }`}
     >

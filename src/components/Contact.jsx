@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send, MessageCircle, Clock, CheckCircle } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import { Captcha } from "../common/Captcha";
+
 
 const contactCards = [
   {
@@ -10,7 +12,7 @@ const contactCards = [
     title: "Location",
     content: "Renaissance Terrace, 126 L, opposite to Bishop Appasamy College, Race Course, Gopalapuram, Coimbatore, Tamil Nadu 641018",
     // Google Maps Search Link
-    link: "https://www.google.com/maps/search/?api=1&query=Bluestone+Tech+Park+Coimbatore",
+    link: "https://maps.app.goo.gl/xfKUMyRBm5ZFvV2c7",
     gradient: "from-blue-500 to-blue-600",
   },
   {
@@ -31,15 +33,10 @@ const contactCards = [
   }
 ];
 
-const benefits = [
-  { icon: <Clock size={20} />, text: "24-Hour Response" },
-  { icon: <CheckCircle size={20} />, text: "Expert Support" },
-  { icon: <MessageCircle size={20} />, text: "Live Chat Available" }
-];
-
 export const Contact = () => {
   const [hovered, setHovered] = React.useState(null);
   const [categories, setCategories] = useState([]);
+  const [currentCaptcha, setCurrentCaptcha] = useState("");
 
 
 useEffect(() => {
@@ -69,7 +66,8 @@ useEffect(() => {
     phone: "",
     email: "",
     service: "Website Development",
-    message: ""
+    message: "",
+    captchaInput: ""
   });
 
   // 2. STATE FOR ERRORS & STATUS
@@ -89,6 +87,10 @@ useEffect(() => {
     if (!phoneRegex.test(formData.phone)) tempErrors.phone = "Invalid Phone (10 digits)";
     
     if (!formData.message.trim()) tempErrors.message = "Message cannot be empty";
+    
+    if (formData.captchaInput !== currentCaptcha) {
+      tempErrors.captchaInput = "Incorrect Captcha";
+    }
     
     setErrors(tempErrors);
 
@@ -110,22 +112,32 @@ useEffect(() => {
     const loadingToast = toast.loading("Sending your message...");
 
     try {
-      const response = await fetch("http://localhost:5003/submit-contact", {
+      const response = await fetch(`https://bluestoneinternationalpreschool.com/bgoi_portal/api/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: `${formData.firstName} ${formData.lastName}`,
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
           email: formData.email,
           phone: formData.phone,
-          service: formData.service,
-          message: formData.message
+          message: formData.message,
+          domain: 'Techpark',
+          category: 'Website Enquiry',
+          interested_in: formData.service || 'Website Development'
         }),
       });
 
     if (response.ok) {
         // 4. SUCCESS TOAST
         toast.success("Message Sent! Check your email.", { id: loadingToast });
-        setFormData({ firstName: "", lastName: "", phone: "", email: "", service: "Website Development", message: "" });
+        setFormData({ 
+          firstName: "", 
+          lastName: "", 
+          phone: "", 
+          email: "", 
+          service: "Website Development", 
+          message: "",
+          captchaInput: "" 
+        });
       } else {
         toast.error("Failed to send message.", { id: loadingToast });
       }
@@ -274,56 +286,34 @@ useEffect(() => {
               </motion.a>
             ))}
 
-            {/* Benefits Section */}
-
+            {/* Map Section */}
             <motion.div
-
               initial={{ opacity: 0, y: 20 }}
-
               whileInView={{ opacity: 1, y: 0 }}
-
               viewport={{ once: true }}
-
-              transition={{ delay: 0.4 }}bg-gradient-to-br from-slate-900 via-blue-900 to-blue-950
-
-              className="bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-500 border border-blue-200 rounded-2xl p-6 mt-6"
-
+              transition={{ delay: 0.4 }}
+              className="relative w-full h-[300px] md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white mt-6 group"
             >
-
-              <h4 className="font-bold text-white mb-4">Why Choose Us?</h4>
-
-              <div className="space-y-3">
-
-                {benefits.map((benefit, idx) => (
-
-                  <motion.div
-
-                    key={idx}
-
-                    className="flex items-center gap-3 text-white"
-
-                    initial={{ opacity: 0, x: -10 }}
-
-                    whileInView={{ opacity: 1, x: 0 }}
-
-                    viewport={{ once: true }}
-
-                    transition={{ delay: 0.5 + idx * 0.1 }}
-
-                  >
-
-                    <span className="text-white">{benefit.icon}</span>
-
-                    <span className="text-sm font-semibold">{benefit.text}</span>
-
-                  </motion.div>
-
-                ))}
-
+              <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.4579783792683!2d76.975745!3d11.0042245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba859820f2775e5%3A0xd0dd64d3d7ee485e!2sBluestone%20Techpark!5e0!3m2!1sen!2sin!4v1774347369467!5m2!1sen!2sin" 
+       width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen="" 
+                loading="lazy" 
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Office Location"
+                className="transition-all duration-700"
+              ></iframe>
+              
+              <div className="absolute top-4 right-4 z-10">
+                <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg border border-blue-50">
+                  <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-2">
+                    <MapPin size={12} /> Live Location
+                  </span>
+                </div>
               </div>
-
             </motion.div>
-
           </div>
 
           {/* Contact Form - Right Side */}
@@ -422,6 +412,19 @@ useEffect(() => {
                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                     className={`w-full px-4 py-3 rounded-xl bg-white/90 outline-none transition-all text-gray-900 resize-none ${errors.message ? 'ring-2 ring-red-400' : ''}`}
                   />
+                </motion.div>
+
+                {/* 5. CAPTCHA SECTION */}
+                <motion.div className="space-y-4">
+                  <Captcha onCodeChange={setCurrentCaptcha} />
+                  <input
+                    type="text"
+                    placeholder="Enter characters"
+                    value={formData.captchaInput}
+                    onChange={(e) => setFormData({...formData, captchaInput: e.target.value})}
+                    className={`w-full px-4 py-3 rounded-xl bg-white/90 outline-none transition-all text-gray-900 ${errors.captchaInput ? 'ring-2 ring-red-400' : ''}`}
+                  />
+                  {errors.captchaInput && <span className="text-[10px] text-red-100 font-bold">{errors.captchaInput}</span>}
                 </motion.div>
 
                <motion.button

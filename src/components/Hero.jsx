@@ -1,12 +1,9 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo, memo } from "react";
+import React, { useState, useEffect, useMemo, memo } from "react";
 import {
   motion,
-  useScroll,
-  useTransform,
   AnimatePresence,
-  useSpring,
 } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -17,13 +14,20 @@ import {
 // --- SUB-COMPONENTS (MEMOIZED) ---
 
 const OrbitalIcon = memo(({ item, index, total, activeCard, setActiveCard }) => {
+  // Safe window measurement for responsive radius
+  const [radius, setRadius] = useState(220);
+
+  useEffect(() => {
+    const updateRadius = () => {
+      const r = window.innerWidth < 640 ? 100 : window.innerWidth < 1024 ? 160 : 220;
+      setRadius(r);
+    };
+    updateRadius();
+    window.addEventListener('resize', updateRadius);
+    return () => window.removeEventListener('resize', updateRadius);
+  }, []);
+
   const angle = (index / total) * (2 * Math.PI);
-  
-  // Responsive Radius
-  const radius = typeof window !== 'undefined' 
-    ? (window.innerWidth < 640 ? 100 : window.innerWidth < 1024 ? 160 : 220) 
-    : 220;
-    
   const x = Math.cos(angle) * radius;
   const y = Math.sin(angle) * radius;
 
@@ -91,12 +95,12 @@ export const Hero = () => {
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
-      // Unified background color for both sides
-      className="relative min-h-screen w-full bg-white flex flex-col-reverse lg:flex-row overflow-x-hidden"
+      // ADDED: overflow-hidden and max-w-full to prevent horizontal scroll
+      className="relative min-h-screen w-full bg-white flex flex-col-reverse lg:flex-row overflow-hidden max-w-full"
     >
       
       {/* --- LEFT CONTENT SECTION --- */}
-      <div className="w-full lg:w-[45%] px-6 py-6 sm:p-8 lg:p-24 flex flex-col justify-center z-20 text-center lg:text-left items-center lg:items-start order-2 lg:order-1">
+      <div className="w-full lg:w-[45%] px-6 py-12 sm:p-8 lg:p-24 flex flex-col justify-center z-20 text-center lg:text-left items-center lg:items-start order-2 lg:order-1">
         <motion.div 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -145,23 +149,21 @@ export const Hero = () => {
       </div>
 
       {/* --- RIGHT VISUAL SECTION --- */}
-      <div className="relative w-full lg:w-[55%] min-h-[400px] sm:min-h-[500px] lg:min-h-screen flex items-center justify-center order-1 lg:order-2">
+      {/* ADDED: flex-1 and overflow-hidden here to contain the orbit */}
+      <div className="relative w-full lg:w-[55%] flex-1 min-h-[400px] sm:min-h-[500px] lg:min-h-screen flex items-center justify-center order-1 lg:order-2 overflow-hidden">
         
-        {/* Background Image with Unified Gradient Mask */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={bgImage} 
             alt="" 
             className="w-full h-full object-cover opacity-[0.08] lg:opacity-[0.12] grayscale" 
           />
-          {/* This gradient ensures the "shade" matches the left side perfectly */}
           <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-white via-white/40 to-transparent" />
         </div>
 
         {/* The Orbital Interface */}
         <div className="relative z-10 w-[280px] h-[280px] sm:w-[450px] sm:h-[450px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
           
-          {/* Orbital Ring Path */}
           <div className="absolute inset-0 border border-blue-400 rounded-full border-dashed scale-95 opacity-50" />
 
           <motion.div 
@@ -182,7 +184,6 @@ export const Hero = () => {
             ))}
           </motion.div>
 
-          {/* Central Hub Icon/Info */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <AnimatePresence mode='wait'>
               {activeCard ? (
@@ -205,7 +206,8 @@ export const Hero = () => {
                   transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }}
                   className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-200"
                 >
-                  <Code className="text-white" size={window?.innerWidth < 640 ? 24 : 32} />
+                  {/* Replaced dynamic window check with standard sizing */}
+                  <Code className="text-white w-6 h-6 sm:w-8 sm:h-8" />
                 </motion.div>
               )}
             </AnimatePresence>

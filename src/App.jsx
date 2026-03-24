@@ -14,6 +14,7 @@ import { InnovationTimeline } from "./components/Timeline";
 import { SimulationSection } from "./components/Simul";
 import { EcosystemGrid } from "./components/Ecosystem";
 import { AcademySection } from "./components/Academy";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 
 
 // Scroll to top on route change
@@ -91,6 +92,7 @@ export default function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           
           {/* 2. ADD ADMIN ROUTE */}
           <Route path="/admin/*" element={<AdminPanel />} />
