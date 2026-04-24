@@ -23,9 +23,9 @@ export const Courses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses");
-        const data = await res.json();
-        setDbCourses(data);
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses?limit=100");
+        const result = await res.json();
+        setDbCourses(result.data || []);
       } catch (err) {
         console.error("Failed to fetch courses:", err);
       } finally {

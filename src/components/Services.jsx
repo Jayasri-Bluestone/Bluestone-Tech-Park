@@ -101,9 +101,9 @@ export const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services");
-        const data = await res.json();
-        setDbServices(data);
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services?limit=100");
+        const result = await res.json();
+        setDbServices(result.data || []);
       } catch (err) {
         console.error("Error fetching services:", err);
       } finally {
@@ -308,11 +308,18 @@ export const Services = () => {
                             <p className="text-slate-300 text-sm md:text-base mb-8 max-w-md leading-relaxed line-clamp-2">
                               {service.description}
                             </p>
-                            <Link to="/contact">
-                              <button className="group flex items-center gap-3 px-8 py-4 bg-white text-slate-900 font-bold rounded-2xl hover:bg-blue-600 hover:text-white transition-all shadow-xl">
-                                Get Started <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                              </button>
-                            </Link>
+                            <div className="flex flex-wrap gap-4">
+                              <Link to={`/services/${service.id}`}>
+                                <button className="group flex items-center gap-3 px-8 py-4 bg-blue-600 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all shadow-xl">
+                                  View Details <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                                </button>
+                              </Link>
+                              <Link to="/contact">
+                                <button className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold rounded-2xl hover:bg-white hover:text-slate-900 transition-all">
+                                  Contact Us
+                                </button>
+                              </Link>
+                            </div>
                           </motion.div>
                         )}
                       </div>

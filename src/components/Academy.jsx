@@ -13,43 +13,66 @@ const DynamicIcon = memo(({ name, size = 24, className = "" }) => {
 });
 
 // Memoized Card - Optimized for hardware acceleration
-const CourseCard = memo(({ course }) => (
-  <div className="w-[300px] sm:w-[450px] md:w-[600px] flex-shrink-0 px-2 md:px-4 transform-gpu">
-    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 h-[280px] md:h-[320px] flex flex-col justify-between shadow-2xl relative overflow-hidden">
-      
-      <div className="relative z-10">
-        <div className="flex items-center gap-4 md:gap-6 mb-4">
-          <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 rounded-2xl flex items-center justify-center text-white shrink-0">
-            <DynamicIcon name={course.icon_name} className="w-6 h-6 md:w-8 md:h-8" />
+const CourseCard = memo(({ course }) => {
+  // Cycle through vibrant accent colors
+  const accents = [
+    { bg: "bg-blue-600", text: "text-blue-600", border: "border-blue-500/20", glow: "shadow-blue-500/20" },
+    { bg: "bg-pink-600", text: "text-pink-600", border: "border-pink-500/20", glow: "shadow-pink-500/20" },
+    { bg: "bg-emerald-600", text: "text-emerald-600", border: "border-emerald-500/20", glow: "shadow-emerald-500/20" },
+  ];
+  const accent = accents[course.id % accents.length] || accents[0];
+
+  return (
+    <div className="w-[300px] sm:w-[450px] md:w-[500px] flex-shrink-0 px-4 transform-gpu">
+      <div className="group relative bg-white rounded-[3rem] p-10 h-[380px] flex flex-col justify-between shadow-xl shadow-slate-200/50 border border-slate-100 transition-all duration-500 hover:border-blue-200 hover:-translate-y-2 overflow-hidden">
+        
+        {/* Animated Background Glow */}
+        <div className={`absolute top-0 right-0 w-64 h-64 ${accent.bg} opacity-5 rounded-full blur-[80px] -mr-32 -mt-32 group-hover:opacity-10 transition-opacity`} />
+        
+        <div className="relative z-10">
+          <div className="flex items-start justify-between mb-8">
+            <div className={`w-16 h-16 ${accent.bg}/10 rounded-2xl flex items-center justify-center ${accent.text} border ${accent.border} shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3`}>
+              <DynamicIcon name={course.icon_name} className="w-8 h-8" />
+            </div>
+            
+            <div className="flex gap-1.5 pt-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className={`w-1.5 h-1.5 rounded-full ${i < 3 ? accent.bg : 'bg-slate-100'}`} />
+              ))}
+            </div>
           </div>
+
           <div>
-            <h3 className="text-xl md:text-3xl font-black text-white tracking-tight leading-tight">
+            <div className="flex items-center gap-3 mb-3">
+              <span className={`px-4 py-1 rounded-full ${accent.bg}/10 ${accent.text} text-[10px] font-black uppercase tracking-[0.2em] border ${accent.border}`}>
+                {course.category || "Professional Track"}
+              </span>
+            </div>
+            <h3 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter leading-none mb-6">
               {course.title}
             </h3>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-200">
-              {course.category || "Pro Track"}
-            </span>
+            <p className="text-slate-500 text-base line-clamp-3 font-medium leading-relaxed">
+              {course.description}
+            </p>
           </div>
         </div>
-        <p className="text-white/80 text-sm md:text-base line-clamp-2 max-w-sm font-medium">
-          {course.description}
-        </p>
-      </div>
 
-      <div className="relative z-10">
-        <Link to="/contact">
-          <button className="bg-white text-blue-700 px-6 py-3 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] flex items-center gap-3 shadow-lg active:scale-95 transition-transform">
-            Explore <ChevronRight size={16} />
-          </button>
-        </Link>
-      </div>
+        <div className="relative z-10 pt-6">
+          <Link to="/contact">
+            <button className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all duration-300 ${accent.bg} text-white hover:opacity-90 hover:gap-5 shadow-lg ${accent.glow}`}>
+              Start Journey <ChevronRight size={18} />
+            </button>
+          </Link>
+        </div>
 
-      <div className="absolute -bottom-10 -right-10 text-white/10 pointer-events-none rotate-[-15deg]">
-        <DynamicIcon name={course.icon_name} size={220} />
+        {/* Large Faded Background Icon */}
+        <div className={`absolute -bottom-10 -right-10 ${accent.text} opacity-[0.03] pointer-events-none rotate-[-15deg] group-hover:rotate-0 transition-transform duration-700`}>
+          <DynamicIcon name={course.icon_name} size={280} />
+        </div>
       </div>
     </div>
-  </div>
-));
+  );
+});
 
 export const AcademySection = () => {
   const [courses, setCourses] = useState([]);
@@ -58,9 +81,9 @@ export const AcademySection = () => {
   useEffect(() => {
     const fetchPrograms = async () => {
       try {
-        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses"); 
-        const data = await res.json();
-        setCourses(data);
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses?limit=100"); 
+        const result = await res.json();
+        setCourses(result.data || []);
       } catch (err) {
         console.error("Error fetching programs:", err);
       } finally {
@@ -111,6 +134,7 @@ export const AcademySection = () => {
               duration: 40,
               ease: "linear",
               repeat: Infinity,
+              repeatType: "loop"
             }}
             style={{ 
               backfaceVisibility: "hidden",

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Search, Trash2, PlusCircle, Edit3, X, Save } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { Pagination, StatusToggle, API_BASE } from './Common/AdminUtils';
+
+const categories = ["Development", "Mobile", "Marketing", "No-Code"];
 
 export const AddCourses = () => {
   const initialForm = {
@@ -15,20 +18,38 @@ export const AddCourses = () => {
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editingId, setEditingId] = useState(null); // Track which course is being edited
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
-  const categories = ["Development", "Mobile", "Marketing", "No-Code"];
 
-  const fetchList = async () => {
+
+  const fetchList = async (page = 1) => {
     try {
-      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses");
-      const data = await res.json();
-      setCourses(data);
+      const res = await fetch(`${API_BASE}/api/courses?page=${page}&limit=10&admin=true`);
+      const result = await res.json();
+      setCourses(result.data);
+      setPagination(result.pagination);
     } catch (err) {
       toast.error("Failed to load courses");
     }
   };
 
-  useEffect(() => { fetchList(); }, []);
+  useEffect(() => { fetchList(pagination.page); }, [pagination.page]);
+
+  const handleStatusToggle = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/courses/status/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus ? 1 : 0 })
+      });
+      if (res.ok) {
+        setCourses(courses.map(c => c.id === id ? { ...c, status: newStatus ? 1 : 0 } : c));
+        toast.success("Status updated");
+      }
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
+  };
 
   // --- ACTIVATE EDIT MODE ---
   const handleEdit = (course) => {
@@ -55,8 +76,8 @@ export const AddCourses = () => {
 
     // Switch between PUT (Update) and POST (Create)
     const url = isEditing 
-      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/courses/${editingId}` 
-      : "https://bluestoneinternationalpreschool.com/techpark_api/api/courses";
+      ? `${API_BASE}/api/courses/${editingId}` 
+      : `${API_BASE}/api/courses`;
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -81,7 +102,7 @@ export const AddCourses = () => {
   const deleteCourse = async (id) => {
     if(!window.confirm("Delete this course?")) return;
     const deleting = toast.loading("Deleting...");
-    const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/courses/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_BASE}/api/courses/${id}`, { method: 'DELETE' });
     if(res.ok) {
       toast.success("Course deleted", { id: deleting });
       if (editingId === id) cancelEdit();
@@ -142,27 +163,63 @@ export const AddCourses = () => {
         </form>
       </div>
 
-      <div className="bg-white p-8 rounded-3xl border shadow-sm">
-        <h3 className="font-bold text-slate-400 mb-4 uppercase tracking-widest text-xs">Active Programs</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {courses.map(c => (
-            <div key={c.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${editingId === c.id ? 'bg-blue-50 border-blue-200' : 'bg-slate-50'}`}>
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg shadow-sm">
-                  {LucideIcons[c.icon_name] ? React.createElement(LucideIcons[c.icon_name], { size: 18, className: "text-pink-600" }) : <PlusCircle size={18}/>}
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800 text-sm leading-tight">{c.title}</p>
-                  <p className="text-[10px] text-slate-400 uppercase font-black">{c.category}</p>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                <button onClick={() => handleEdit(c)} className="text-blue-400 hover:text-blue-600 p-2 transition-colors"><Edit3 size={16}/></button>
-                <button onClick={() => deleteCourse(c.id)} className="text-red-400 hover:text-red-600 p-2 transition-colors"><Trash2 size={16}/></button>
-              </div>
-            </div>
-          ))}
-          {courses.length === 0 && <p className="text-slate-400 italic text-sm">No programs found.</p>}
+      <div className="bg-white p-8 rounded-3xl border shadow-sm overflow-hidden">
+        <h3 className="font-bold text-slate-400 mb-6 uppercase tracking-widest text-xs">Active Programs</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
+            <thead>
+              <tr className="bg-slate-50/50">
+                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Program</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Description</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Category</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Status</th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-50">
+              {courses.map((c) => {
+                const Icon = LucideIcons[c.icon_name] || LucideIcons.PlusCircle;
+                return (
+                  <tr key={c.id} className="group hover:bg-blue-50/30 transition-all">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-slate-50 rounded-lg shadow-sm text-pink-600">
+                          <Icon size={18} />
+                        </div>
+                        <p className="font-bold text-slate-800 text-sm uppercase">{c.title}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <p className="text-slate-500 text-xs max-w-[300px] truncate font-medium">{c.description}</p>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-[10px] text-blue-600 uppercase font-black bg-blue-50 px-3 py-1 rounded-full">{c.category}</span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <StatusToggle 
+                        status={c.status} 
+                        onToggle={(newStatus) => handleStatusToggle(c.id, newStatus)} 
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 justify-center">
+                        <button onClick={() => handleEdit(c)} className="p-2 bg-white text-blue-400 hover:text-blue-600 rounded-lg border border-slate-100 shadow-sm"><Edit3 size={16}/></button>
+                        <button onClick={() => deleteCourse(c.id)} className="p-2 bg-white text-red-400 hover:text-red-600 rounded-lg border border-slate-100 shadow-sm"><Trash2 size={16}/></button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          <Pagination 
+            currentPage={pagination.page} 
+            totalPages={pagination.totalPages} 
+            onPageChange={(page) => setPagination(prev => ({ ...prev, page }))} 
+          />
+
+          {courses.length === 0 && <p className="text-slate-400 italic text-sm p-10 text-center">No programs found.</p>}
         </div>
       </div>
     </div>

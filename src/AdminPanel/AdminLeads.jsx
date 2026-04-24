@@ -1,8 +1,9 @@
 import React from 'react';
 import { Trash2, Download, MessageSquare, Mail, Phone, MessageCircle } from "lucide-react";
-import toast from "react-hot-toast"; // Ensure Toaster is rendered in your parent component
+import toast from "react-hot-toast";
+import { Pagination, API_BASE } from './Common/AdminUtils';
 
-export const AdminLeads = ({ leads, refresh }) => {
+export const AdminLeads = ({ leads, refresh, pagination, setPagination }) => {
   // Filter for approved leads
   const activeLeads = leads.filter(l => l.form_type === 'LEAD');
 
@@ -42,7 +43,7 @@ export const AdminLeads = ({ leads, refresh }) => {
               const loadingToast = toast.loading("Deleting...");
 
               try {
-                const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/${id}`, { 
+                const res = await fetch(`${API_BASE}/api/enquiry/${id}`, { 
                   method: 'DELETE' 
                 });
 
@@ -77,7 +78,7 @@ export const AdminLeads = ({ leads, refresh }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-20">
       {/* Header with Export */}
       <div className="flex justify-between items-center bg-white p-4 rounded-3xl border border-gray-100 shadow-sm">
         <h2 className="text-xl font-black text-slate-800 italic uppercase tracking-tight ml-2">Verified Leads</h2>
@@ -149,6 +150,12 @@ export const AdminLeads = ({ leads, refresh }) => {
               ))}
             </tbody>
           </table>
+
+          <Pagination 
+            currentPage={pagination.page} 
+            totalPages={pagination.totalPages} 
+            onPageChange={(page) => setPagination(prev => ({ ...prev, page }))} 
+          />
 
           {activeLeads.length === 0 && (
             <div className="p-20 text-center text-gray-300 font-black italic uppercase tracking-widest">

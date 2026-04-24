@@ -6,12 +6,14 @@ import {
   TrendingUp, Clock, ArrowUpRight 
 } from "lucide-react";
 
-export const AdminDashboard = ({ leads = [] }) => {
+export const AdminDashboard = ({ leads = [], stats }) => {
   const navigate = useNavigate(); // Initialize navigation
 
-  // Logic to calculate stats
-  const totalEnquiries = leads.filter(l => l.form_type === 'CONTACT_FORM').length;
-  const totalLeads = leads.filter(l => l.form_type === 'LEAD').length;
+  // Logic to calculate stats (Fallback to local if API stats not available)
+  const totalEnquiries = stats ? stats.enquiry : leads.filter(l => l.form_type === 'CONTACT_FORM').length;
+  const totalLeads = stats ? stats.leads : leads.filter(l => l.form_type === 'LEAD').length;
+  const totalCourses = stats ? stats.courses : "0";
+  const totalServices = stats ? stats.services : "0";
 
   const [view, setView] = React.useState('enquiry');
   
@@ -19,7 +21,7 @@ export const AdminDashboard = ({ leads = [] }) => {
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 5);
 
-  const stats = [
+  const statsConfig = [
     { 
         label: "Total Enquiries", 
         value: totalEnquiries, 
@@ -38,7 +40,7 @@ export const AdminDashboard = ({ leads = [] }) => {
     },
     { 
         label: "Active Courses", 
-        value: "5", 
+        value: totalCourses, 
         icon: <BookOpen size={24} />, 
         color: "bg-pink-500", 
         shadow: "shadow-pink-200",
@@ -46,7 +48,7 @@ export const AdminDashboard = ({ leads = [] }) => {
     },
     { 
         label: "Total Services", 
-        value: "8", 
+        value: totalServices, 
         icon: <Layers size={24} />, 
         color: "bg-cyan-500", 
         shadow: "shadow-cyan-200",
@@ -58,7 +60,7 @@ export const AdminDashboard = ({ leads = [] }) => {
     <div className="space-y-10">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, idx) => (
+        {statsConfig.map((stat, idx) => (
           <motion.div
             key={idx}
             initial={{ opacity: 0, y: 20 }}

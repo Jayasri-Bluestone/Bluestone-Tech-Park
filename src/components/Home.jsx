@@ -13,19 +13,25 @@ import { Link } from "react-router-dom";
 
 import { ReactLenis } from "lenis/react";
 import {
-  Cpu,  Database,
+  Cpu, Database,
   Layout, ArrowRight,
   MousePointer2, Loader2,
-  ChevronRight,  Code, Smartphone, 
+  ChevronRight, Code, Smartphone,
 } from "lucide-react";
 import { TechParkFeatures } from "./TechParkFeatures";
 import { Contact } from "./Contact";
 import { Services } from "./Services";
 import * as LucideIcons from 'lucide-react';
+import { AcademySection } from "./Academy";
+
+// Import live assets
+import IMG_8599 from "../assets/IMG_8599.jpg";
+import IMG_8602 from "../assets/IMG_8602.jpg";
+import IMG_8604 from "../assets/IMG_8604.jpg";
+import IMG_8622 from "../assets/IMG_8622.jpg";
+import vasa from "../assets/vasa.png";
 
 /* ---------------- DATA ---------------- */
-
-
 
 
 // --- ANIMATION VARIANTS ---
@@ -44,12 +50,12 @@ const fadeInUp = {
 const Hero = () => {
   // 1. ALL HOOKS AT THE TOP
   const [activeCard, setActiveCard] = useState(null);
-  const [features, setFeatures] = useState([]); 
+  const [features, setFeatures] = useState([]);
   const [heroData, setHeroData] = useState(null);
 
   // 2. DEFINE DERIVED VARIABLES
   // bgImage uses the first image from your DB, or a fallback if empty
-  const bgImage = heroData?.image_url || heroData?.image_data ;
+  const bgImage = heroData?.image_url || heroData?.image_data;
 
   // 3. FETCH IMAGES FROM DATABASE
   useEffect(() => {
@@ -57,7 +63,7 @@ const Hero = () => {
       try {
         const response = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/media/hero");
         const data = await response.json();
-        
+
         if (Array.isArray(data) && data.length > 0) {
           // Set the primary background image (first entry)
           setHeroData(data[0]);
@@ -65,7 +71,7 @@ const Hero = () => {
           // Map database rows to your orbital feature structure
           const formattedData = data.map((item, index) => ({
             id: item.id,
-            img: item.image_url || item.image_data, 
+            img: item.image_url || item.image_data,
             title: item.title || `Module ${index + 1}`,
             // Alternating your specific brand gradients
             color: index % 2 === 0 ? "from-blue-600 to-indigo-600" : "from-cyan-500 to-blue-400"
@@ -91,16 +97,16 @@ const Hero = () => {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
   };
 
-  
+
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
       className="relative min-h-screen w-full bg-[#fdfdfd] flex flex-col lg:flex-row overflow-x-hidden"
     >
-      
+
       {/* --- LEFT SECTION --- */}
       <div className="w-full lg:w-[45%] p-6 sm:p-12 lg:p-24 flex flex-col justify-center z-20 bg-[#fdfdfd] text-center lg:text-left items-center lg:items-start">
         <motion.div variants={itemVariants} className="flex items-center gap-3 mb-6">
@@ -108,18 +114,18 @@ const Hero = () => {
         </motion.div>
 
         <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl italic lg:text-7xl font-black text-slate-900 leading-none mb-6">
-          BLUESTONE<br/>
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 italic">TECHPARK</span>
+          BLUESTONE<br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 italic uppercase">Tech Park</span>
         </motion.h1>
 
         <motion.p variants={itemVariants} className="text-slate-500 text-base sm:text-lg lg:text-xl mb-10 max-w-md leading-relaxed">
-          Master the future of <span className="text-blue-600 font-bold">Full-Stack Development</span>. 
-          Enroll in our elite tech ecosystem.
+          The technology vertical of <span className="text-blue-600 font-bold italic">Bluestone Group of Institutions</span>.
+          We build the digital infrastructure for the future of education.
         </motion.p>
 
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <Link to="/contact" className="w-full sm:w-auto">
-            <motion.button 
+            <motion.button
               whileHover={{ y: -4 }}
               whileTap={{ scale: 0.95 }}
               className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all flex items-center justify-center gap-3 tracking-wide"
@@ -131,8 +137,8 @@ const Hero = () => {
 
         <motion.div variants={itemVariants} className="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-4 p-3 border border-blue-50 rounded-2xl bg-blue-50/30 w-fit">
           <div className="flex -space-x-3">
-            {[1,2,3].map(i => (
-              <img key={i} src={`https://i.pravatar.cc/100?u=${i}`} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white" alt="student" />
+            {[IMG_8602, IMG_8604, IMG_8622].map((img, i) => (
+              <img key={i} src={img} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover" alt="student" />
             ))}
           </div>
           <p className="text-xs sm:text-sm font-bold text-slate-600">Join <span className="text-blue-600">1,200+</span> Developers</p>
@@ -141,11 +147,11 @@ const Hero = () => {
 
       {/* --- RIGHT SECTION: RESPONSIVE ORBIT --- */}
       <div className="relative w-full lg:w-[55%] min-h-[500px] sm:min-h-[600px] flex items-center justify-center bg-[#fdfdfd] overflow-hidden">
-        
+
         {/* Cinematic Backdrop (Dynamic from DB) */}
-        <motion.div 
-          initial={{ opacity: 0 }} 
-          animate={{ opacity: 0.1 }} 
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.1 }}
           className="absolute inset-0 grayscale pointer-events-none transition-opacity duration-1000"
         >
           <img src={bgImage} alt="bg" className="w-full h-full object-cover" />
@@ -154,13 +160,13 @@ const Hero = () => {
 
         {/* The Orbital Interface */}
         <div className="relative z-10 w-[300px] h-[300px] sm:w-[470px] sm:h-[470px] lg:w-[500px] lg:h-[500px] flex items-center justify-center">
-          
-          <motion.div 
-            animate={{ rotate: 360 }} 
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }} 
-            className="absolute inset-0 border border-blue-400 rounded-full border-dashed scale-90 opacity-50" 
+
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 border border-blue-400 rounded-full border-dashed scale-90 opacity-50"
           />
-          
+
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
@@ -202,33 +208,33 @@ const Hero = () => {
 
           {/* CENTRAL HUB */}
           <div className="absolute inset-0 flex  items-center justify-center pointer-events-none">
-             <AnimatePresence mode='wait'>
-                {activeCard ? (
-                  <motion.div
-                    key="info"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="text-center bg-white/95 backdrop-blur-md p-4 sm:p-8 rounded-full border border-blue-100 shadow-xl pointer-events-auto"
-                  >
-                    <p className="text-blue-600 font-black text-xs sm:text-sm uppercase mb-1 tracking-widest">{activeCard.title}</p>
-                    <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold uppercase">Active</p>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-200"
-                  >
-                    <Code className="text-white" size={typeof window !== 'undefined' && window.innerWidth < 640 ? 24 : 32} />
-                  </motion.div>
-                )}
-             </AnimatePresence>
+            <AnimatePresence mode='wait'>
+              {activeCard ? (
+                <motion.div
+                  key="info"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  className="text-center bg-white/95 backdrop-blur-md p-4 sm:p-8 rounded-full border border-blue-100 shadow-xl pointer-events-auto"
+                >
+                  <p className="text-blue-600 font-black text-xs sm:text-sm uppercase mb-1 tracking-widest">{activeCard.title}</p>
+                  <p className="text-slate-400 text-[8px] sm:text-[10px] font-bold uppercase">Active</p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-200"
+                >
+                  <Code className="text-white" size={typeof window !== 'undefined' && window.innerWidth < 640 ? 24 : 32} />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
         {/* TECH STACK BAR */}
-        <motion.div 
+        <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1.5 }}
@@ -255,8 +261,8 @@ const getFallbackDesc = (i) => [
 const TimelineSection = ({ phase, index, isEven }) => {
   return (
     <div className={`flex flex-col md:flex-row items-center justify-between mb-32 ${isEven ? 'md:flex-row-reverse' : ''}`}>
-      
-      <motion.div 
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
@@ -272,7 +278,7 @@ const TimelineSection = ({ phase, index, isEven }) => {
 
       <div className="hidden md:block w-2/12" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, margin: "-10% 0px -10% 0px" }}
@@ -281,8 +287,8 @@ const TimelineSection = ({ phase, index, isEven }) => {
       >
         <div className="relative overflow-hidden rounded-2xl shadow-xl">
           <div className="absolute inset-0 border-2 border-blue-500/10 rounded-2xl pointer-events-none" />
-          <img 
-            src={phase.image} 
+          <img
+            src={phase.image}
             alt={phase.title}
             loading="lazy"
             className="w-full h-64 md:h-80 object-cover rounded-2xl"
@@ -345,7 +351,7 @@ export const InnovationTimeline = () => {
   return (
     <section ref={targetRef} className="relative py-20 bg-white">
       <div className="max-w-6xl mx-auto px-6 relative">
-        
+
         {/* Central Vertical Line */}
         <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-[2px] bg-slate-100 -translate-x-1/2 overflow-hidden">
           <motion.div
@@ -357,7 +363,7 @@ export const InnovationTimeline = () => {
         <div className="relative z-10">
           {dbPhases.map((phase, i) => (
             <div key={i} className="relative">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
@@ -376,143 +382,121 @@ export const InnovationTimeline = () => {
 
 
 
-/* ---------------- WAABI-INSPIRED SIMULATION SECTION ---------------- */
-export const SimulationSection = () => {
+// --- VERTICAL SHOWCASE SECTION (Replaced Simulation) ---
+export const VerticalShowcase = () => {
   const containerRef = useRef(null);
-  
-  // 1. Get raw scroll progress
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
-  // 2. THE SECRET SAUCE: Create a smooth spring version of the scroll
-  // This removes all jitter from mobile touch scrolling
   const smoothScroll = useSpring(scrollYProgress, {
-    stiffness: 100, // Lower = more "weight"
-    damping: 30,    // Higher = less oscillation
+    stiffness: 100,
+    damping: 30,
     restDelta: 0.001
   });
 
-  // 3. Map the SMOOTH progress to your transforms
-  const xBg = useTransform(smoothScroll, [0, 1], ["0%", "-30%"]);
+  const xBg = useTransform(smoothScroll, [0, 1], ["0%", "-20%"]);
   const scanLineY = useTransform(smoothScroll, [0, 1], ["-10vh", "110vh"]);
   const nodeOpacity = useTransform(smoothScroll, [0.1, 0.3, 0.7, 0.9], [0, 1, 1, 0]);
 
   return (
     <section ref={containerRef} className="relative h-[100vh] bg-slate-950 overflow-hidden">
       <div className="sticky top-0 h-screen w-full flex flex-col justify-center overflow-hidden">
-        
+
         {/* LARGE BACKGROUND TEXT */}
-        <motion.div 
+        <motion.div
           style={{ x: xBg }}
-          // Force GPU acceleration with translateZ(0)
           className="absolute inset-0 flex items-center whitespace-nowrap pointer-events-none select-none will-change-transform transform-gpu"
         >
-          <h2 className="text-[30vw] font-black text-white/[0.015] leading-none">
-            VIRTUAL_PRODUCTION_SIMULATION_SYSTEM_01
+          <h2 className="text-[25vw] font-black text-white/[0.015] leading-none uppercase">
+            Institutional_Ecosystem_V3
           </h2>
         </motion.div>
 
         {/* SCANNING LINE EFFECT */}
-        <motion.div 
-          style={{ y: scanLineY }} 
-          className="absolute top-0 left-0 w-full h-[1px] md:h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent z-10 will-change-transform transform-gpu"
+        <motion.div
+          style={{ y: scanLineY }}
+          className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent z-10 transform-gpu"
         />
 
         <div className="relative z-20 max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-          
+
           <div className="space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
+              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
+              <div className="flex gap-1.5 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className={`w-2 h-2 rounded-full ${i < 3 ? 'bg-blue-600' : 'bg-slate-800'}`} />
+                ))}
+              </div>
               <h2 className="text-6xl italic lg:text-8xl font-black text-white tracking-tighter leading-none">
-                THE<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600">DIGITAL TWIN</span>
+                OUR<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600 uppercase">SOLUTIONS</span>
               </h2>
             </motion.div>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-slate-400 text-lg md:text-xl max-w-md font-light leading-relaxed"
             >
-              Every square inch of Bluestone Tech Park is mirrored in a high-fidelity virtual environment.
+              Bluestone Tech Park serves as the core technology vertical, powering the entire digital ecosystem of Bluestone Group of Institutions.
             </motion.p>
 
             <div className="flex gap-10">
-              <StatBlock label="Accuracy" value="1:1" color="border-blue-600" />
-              <StatBlock label="Latency" value="0.5ms" color="border-slate-800" />
+              <StatBlock label="Verticals" value="04+" color="border-blue-600" />
+              <StatBlock label="Active Users" value="50k+" color="border-slate-800" />
             </div>
           </div>
 
-          {/* RIGHT SIDE: DATA VISUALIZATION WINDOW */}
-         <div className="relative aspect-square lg:aspect-video rounded-[2rem] md:rounded-[3rem] border border-white/10 bg-slate-900/50 backdrop-blur-xl overflow-hidden group">
+          {/* PROJECT PREVIEW WINDOW */}
+          <div className="relative aspect-square lg:aspect-video rounded-[3rem] border border-white/10 bg-slate-900/50 backdrop-blur-xl overflow-hidden group">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
 
-             {/* Animated Grid Background */}
-
-             <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-
-
-
-             {/* Moving Simulation Nodes */}
-
-             <motion.div
-
-               style={{ opacity: nodeOpacity }}
-
-               className="absolute inset-0 p-6 md:p-12 will-change-opacity"
-
-             >
-
-                <div className="w-full h-full relative border border-blue-500/20 rounded-2xl overflow-hidden">
-
-                    <div className="absolute top-4 left-4 flex items-center gap-2 z-20">
-
-                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-
-                        <span className="text-blue-500 font-mono text-[10px] uppercase">Live_Node_Feed</span>
-
-                    </div>
-
-
-
-                    <img
-
-                      src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=60&w=800"
-
-                      className="w-full h-full object-cover opacity-30 mix-blend-overlay transform-gpu"
-
-                      alt="Simulation"
-
-                      loading="lazy"
-
-                    />
-
+            <motion.div
+              style={{ opacity: nodeOpacity }}
+              className="absolute inset-0 p-8 md:p-12"
+            >
+              <div className="w-full h-full relative border border-blue-500/20 rounded-3xl overflow-hidden shadow-2xl">
+                <div className="absolute top-6 left-6 flex items-center gap-2 z-20">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="text-white font-mono text-[10px] uppercase tracking-widest">Portfolio_Live_02</span>
                 </div>
 
-             </motion.div>
+                <img
+                  src="/bluestone_preschool_mockup_1777013212530.png"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  alt="Bluestone Preschool Platform"
+                />
 
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-slate-950 to-transparent">
+                  <p className="text-white font-black italic text-2xl uppercase tracking-tighter">Bluestone Preschool Platform</p>
+                  <p className="text-blue-400 text-xs font-bold uppercase tracking-widest">Web & Mobile Ecosystem</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
-
         </div>
 
         {/* HUD UI */}
         <div className="absolute bottom-10 left-0 w-full px-10 flex justify-between items-end opacity-30">
-            <div className="hidden md:flex font-mono text-[9px] text-slate-500 gap-10">
-                <span>VER_4.0.9</span>
-                <span>LOC_12.9_77.5</span>
-            </div>
-            <motion.div 
-              animate={{ opacity: [0.3, 0.6, 0.3] }} 
-              transition={{ repeat: Infinity, duration: 3 }}
-              className="text-blue-500 font-mono text-[10px] uppercase tracking-widest"
-            >
-              Simulation Active
-            </motion.div>
+          <div className="hidden md:flex font-mono text-[9px] text-slate-500 gap-10 uppercase tracking-widest">
+            <span>Vertical_Integration_Stable</span>
+            <span>System_Uptime_99.9%</span>
+          </div>
+          <motion.div
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ repeat: Infinity, duration: 3 }}
+            className="text-blue-500 font-mono text-[10px] uppercase tracking-widest"
+          >
+            Powering Bluestone Group
+          </motion.div>
         </div>
       </div>
     </section>
@@ -543,7 +527,7 @@ const getLayoutProps = (i) => {
 };
 
 // Fallback titles since your DB shows NULL
-const getFallbackTitle1 = (i) => 
+const getFallbackTitle1 = (i) =>
   ["AI Research", "Fintech", "Cloud Hub", "BioTech", "Accelerator", "Cyber Unit", "Robotics"][i] || "Innovation Lab";
 
 export const EcosystemGrid = () => {
@@ -560,10 +544,11 @@ export const EcosystemGrid = () => {
         if (Array.isArray(data)) {
           const formatted = data.map((item, i) => {
             const layout = getLayoutProps(i);
+            const fallbacks = [IMG_8599, IMG_8604, IMG_8622];
             return {
               ...layout,
-              title:getFallbackTitle1(i),
-              img: item.image_url || item.image_data,
+              title: getFallbackTitle1(i),
+              img: item.image_url || item.image_data || fallbacks[i % fallbacks.length],
             };
           });
           setDbDivisions(formatted);
@@ -584,9 +569,9 @@ export const EcosystemGrid = () => {
   return (
     <section className="py-20 bg-white overflow-hidden min-h-full flex items-center">
       <div className="max-w-7xl mx-auto px-6 w-full">
-        
+
         <div className="mb-24 text-center">
-          <motion.h2 
+          <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             className="text-5xl font-black text-black uppercase italic tracking-tighter"
@@ -602,16 +587,16 @@ export const EcosystemGrid = () => {
               initial={{ opacity: 0, scale: 0, x: item.x, y: item.y }}
               whileInView={{ opacity: 1, scale: 1, x: 0, y: 0 }}
               viewport={{ once: false, amount: 0.2 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 80, 
-                damping: 20, 
-                delay: i * 0.08 
+              transition={{
+                type: "spring",
+                stiffness: 80,
+                damping: 20,
+                delay: i * 0.08
               }}
               whileHover={{ scale: 0.98, zIndex: 10 }}
               className={`${item.size} relative group cursor-pointer overflow-hidden rounded-[2.5rem] shadow-2xl`}
             >
-              <motion.img 
+              <motion.img
                 src={item.img}
                 alt={item.title}
                 className="absolute inset-0 w-full h-full object-cover group-hover:opacity-80 transition-all duration-700"
@@ -621,14 +606,14 @@ export const EcosystemGrid = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
 
               <div className="relative z-10 h-full p-8 flex flex-col justify-between">
-                <motion.div 
+                <motion.div
                   initial={{ rotate: -10 }}
                   whileHover={{ rotate: 0, scale: 1.1 }}
                   className="bg-white/10 w-14 h-14 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-xl border border-white/20 shadow-xl"
                 >
                   {item.icon}
                 </motion.div>
-                
+
                 <div>
                   <h3 className="text-white text-2xl font-black uppercase tracking-tighter group-hover:text-blue-400 transition-colors">
                     {item.title}
@@ -651,166 +636,42 @@ export const EcosystemGrid = () => {
 
 
 
-//Academy Section
-
-export const AcademySection = () => {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPrograms = async () => {
-      try {
-        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/courses"); 
-        const data = await res.json();
-        setCourses(data);
-      } catch (err) {
-        console.error("Error fetching programs:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPrograms();
-  }, []);
-
-  const DynamicIcon = ({ name, ...props }) => {
-    const IconComponent = LucideIcons[name] || LucideIcons.Code;
-    return <IconComponent {...props} />;
-  };
-
-  // Optimization: Only double the data if you have enough items to fill the screen
-  const infiniteCourses = [...courses, ...courses];
-
-  if (loading) return (
-    <div className="h-96 flex items-center justify-center">
-      <Loader2 className="animate-spin text-blue-600" size={40} />
-    </div>
-  );
-
-  return (
-    <section className="py-10 md:py-24 bg-white overflow-hidden relative min-h-full flex flex-col justify-center">
-      {/* Background Layer - Use priority loading or low-res placeholder if possible */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <img 
-          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072" 
-          alt=""
-          className="w-full h-full object-cover opacity-10 md:opacity-20" 
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" />
-      </div>
-
-      <div className="relative z-10">
-        <div className="max-w-7xl mx-auto px-6 mb-12 md:mb-16">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl italic font-black text-black tracking-tighter leading-none">
-            OUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-pink-600">PROGRAMS</span>
-          </h2>
-        </div>
-
-        <div className="flex relative items-center">
-          <motion.div 
-            className="flex gap-4 md:gap-8 px-4 will-change-transform" // Added will-change-transform
-            animate={{ x: [0, "-50%"] }} // Changed to -50% because we only doubled the array
-            transition={{
-              x: {
-                repeat: Infinity,
-                repeatType: "loop",
-                duration: 40, // Adjusted for smoothness
-                ease: "linear",
-              },
-            }}
-            style={{ width: "max-content" }}
-          >
-            {infiniteCourses.map((course, i) => (
-              <div 
-                key={`${course.id}-${i}`} 
-                className="w-[300px] sm:w-[450px] md:w-[650px] lg:w-[700px] group flex-shrink-0"
-              >
-                <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-700 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-12 h-[280px] md:h-[300px] flex flex-col justify-between shadow-xl relative overflow-hidden">
-                  
-                  <div className="relative z-10 flex flex-col md:flex-row justify-between items-start gap-4">
-                    <div className="flex items-start md:items-center gap-4 md:gap-6">
-                      <div className="w-12 h-12 md:w-16 md:h-16 bg-white/10 backdrop-blur-md rounded-xl md:rounded-2xl flex items-center justify-center text-white">
-                        <DynamicIcon name={course.icon_name} className="w-6 h-6 md:w-8 md:h-8" />
-                      </div>
-                      <div>
-                        <h3 className="text-2xl md:text-4xl font-black text-white tracking-tight leading-tight mb-1">
-                          {course.title}
-                        </h3>
-                        <p className="text-white/70 text-sm line-clamp-2 max-w-sm">
-                          {course.description}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
-                    <span className="px-3 py-1 bg-white/10 backdrop-blur-sm border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-white">
-                      {course.category || "Pro Track"}
-                    </span>
-
-                    {/* CONTACT ROUTE INTEGRATION */}
-                    <Link to="/contact">
-                      <motion.button 
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-white text-blue-600 px-6 py-3 md:px-8 md:py-4 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.2em] flex items-center gap-3 shadow-lg"
-                      >
-                        Explore <ChevronRight size={18} />
-                      </motion.button>
-                    </Link>
-                  </div>
-
-                  {/* Optimization: Static Opacity for Background Icon */}
-                  <div className="absolute -bottom-6 -right-6 text-white/5 pointer-events-none rotate-[-15deg]">
-                    <DynamicIcon name={course.icon_name} size={250} />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-
-
 /* ---------------- MAIN ---------------- */
 
 export default function BluestoneExperience() {
   return (
     <ReactLenis root options={{ lerp: 0.08 }}>
-     <main className="relative bg-[#f8fafc] text-slate-900 overflow-hidden">
+      <main className="relative bg-[#f8fafc] text-slate-900 overflow-hidden">
 
-  {/* ---------- 2-COLOR BACKGROUND THEME ---------- */}
-  <div className="fixed inset-0 -z-10">
+        {/* ---------- 2-COLOR BACKGROUND THEME ---------- */}
+        <div className="fixed inset-0 -z-10">
 
-    <div className="absolute inset-0 bg-gradient-to-br from-[#f8fafc] via-[#eef2ff] to-[#f1f5f9]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[#f8fafc] via-[#eef2ff] to-[#f1f5f9]" />
 
-    <motion.div
-      animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-      transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-      className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] bg-blue-400/20 rounded-full blur-[160px]"
-    />
+          <motion.div
+            animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute top-[-20%] left-[-10%] w-[700px] h-[700px] bg-blue-400/20 rounded-full blur-[160px]"
+          />
 
-    <motion.div
-      animate={{ x: [0, -40, 0], y: [0, -30, 0] }}
-      transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-      className="absolute bottom-[-20%] right-[-10%] w-[700px] h-[700px] bg-indigo-400/20 rounded-full blur-[160px]"
-    />
+          <motion.div
+            animate={{ x: [0, -40, 0], y: [0, -30, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute bottom-[-20%] right-[-10%] w-[700px] h-[700px] bg-indigo-400/20 rounded-full blur-[160px]"
+          />
 
-  </div>
+        </div>
 
-  <Hero />
-  <TechParkFeatures/>
-  <InnovationTimeline />
-  <SimulationSection/>
-  <Services />
-  <EcosystemGrid />
-  <AcademySection />
-  <Contact/>
+        <Hero />
+        <TechParkFeatures />
+        <InnovationTimeline />
+        <VerticalShowcase />
+        <Services />
+        <EcosystemGrid />
+        <AcademySection />
+        <Contact />
 
-</main>
+      </main>
 
     </ReactLenis>
   );

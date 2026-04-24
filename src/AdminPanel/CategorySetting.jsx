@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Plus, Trash2, Edit3, X, Save, Loader2, AlertCircle } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { API_BASE } from './Common/AdminUtils';
 
 export const CategorySettings = () => {
   const [categories, setCategories] = useState([]);
@@ -15,7 +16,7 @@ export const CategorySettings = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/categories");
+      const res = await fetch(`${API_BASE}/api/categories`);
       const data = await res.json();
       setCategories(data);
     } catch (err) {
@@ -37,7 +38,7 @@ export const CategorySettings = () => {
     if (!newCategory.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/categories", {
+      const res = await fetch(`${API_BASE}/api/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newCategory })
@@ -55,7 +56,7 @@ export const CategorySettings = () => {
     if (!editValue.trim()) return;
     const t = toast.loading("Saving...");
     try {
-      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/categories/${id}`, {
+      const res = await fetch(`${API_BASE}/api/categories/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: editValue })
@@ -73,7 +74,7 @@ export const CategorySettings = () => {
     if (!targetCat) return;
     const t = toast.loading("Deleting...");
     try {
-      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/categories/${targetCat.id}`, { 
+      const res = await fetch(`${API_BASE}/api/categories/${targetCat.id}`, { 
         method: "DELETE" 
       });
       if (res.ok) {

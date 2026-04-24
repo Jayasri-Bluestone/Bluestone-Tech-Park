@@ -15,6 +15,10 @@ import { LoginForm } from "./LoginForm";
 import { AdminSettings } from "./AdminSettings";
 import { CategorySettings } from "./CategorySetting";
 import { MediaManagement } from "./AdminMedia";
+import { AddTestimonials } from "./AddTestimonials";
+import { AddProjects } from "./AddProjects";
+
+import { API_BASE } from "./Common/AdminUtils";
 
 export const AdminPanel = () => {
   const navigate = useNavigate();
@@ -26,6 +30,8 @@ export const AdminPanel = () => {
   });
   
   const [leads, setLeads] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
   // 2. Auth Handlers (MUST BE INSIDE THE COMPONENT)
   const handleLogin = () => {
@@ -40,19 +46,42 @@ export const AdminPanel = () => {
   };
 
   // 3. Data Fetching
-  const fetchLeads = async () => {
+  const fetchLeads = async (page = 1) => {
     try {
-      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/leads");
-      const data = await res.json();
-      setLeads(data);
+      const res = await fetch(`${API_BASE}/api/leads?page=${page}&limit=50&admin=true`);
+      const result = await res.json();
+      
+      // Defensive check for paginated response
+      if (result && result.data) {
+        setLeads(result.data);
+        setPagination(result.pagination || { page: 1, totalPages: 1 });
+      } else if (Array.isArray(result)) {
+        // Fallback for legacy array response
+        setLeads(result);
+        setPagination({ page: 1, totalPages: 1 });
+      }
     } catch (err) { 
       console.error("Fetch error:", err); 
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/stats`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.error("Stats error:", err);
+    }
+  };
+
   useEffect(() => {
-    if (isLoggedIn) fetchLeads();
-  }, [isLoggedIn]);
+    if (isLoggedIn) {
+      fetchLeads(pagination?.page || 1);
+      fetchStats();
+    }
+  }, [isLoggedIn, pagination?.page]);
 
   // 4. Menu Config
   const menuItems = [
@@ -62,6 +91,8 @@ export const AdminPanel = () => {
     { name: "Categories", path: "/admin/categories", icon: <Users size={20} />, color: "text-purple-400" },
     { name: "Add Services", path: "/admin/services", icon: <PlusCircle size={20} />, color: "text-cyan-400" },
     { name: "Add Courses", path: "/admin/courses", icon: <BookOpen size={20} />, color: "text-pink-400" },
+    { name: "Testimonials", path: "/admin/testimonials", icon: <MessageSquare size={20} />, color: "text-emerald-400" },
+    { name: "Projects", path: "/admin/projects", icon: <PlusCircle size={20} />, color: "text-indigo-400" },
     { name: "Media Management", path: "/admin/media", icon: <Settings size={20} />, color: "text-slate-400" },
     { name: "Admin Settings", path: "/admin/settings", icon: <Settings size={20} />, color: "text-slate-400" },
   ];
@@ -130,12 +161,14 @@ export const AdminPanel = () => {
 
         <div className="relative">
           <Routes>
-            <Route path="/" element={<AdminDashboard leads={leads} />} />
-            <Route path="/enquiry" element={<AdminEnquiry leads={leads} refresh={fetchLeads} />} />
-            <Route path="/leads" element={<AdminLeads leads={leads} refresh={fetchLeads} />} />
+            <Route path="/" element={<AdminDashboard leads={leads} stats={stats} />} />
+            <Route path="/enquiry" element={<AdminEnquiry leads={leads} refresh={fetchLeads} pagination={pagination} setPagination={setPagination} />} />
+            <Route path="/leads" element={<AdminLeads leads={leads} refresh={fetchLeads} pagination={pagination} setPagination={setPagination} />} />
             <Route path="/categories" element={<CategorySettings />} />
             <Route path="/services" element={<AddServices />} />
             <Route path="/courses" element={<AddCourses />} />
+            <Route path="/testimonials" element={<AddTestimonials />} />
+            <Route path="/projects" element={<AddProjects />} />
             <Route path="/media" element={<MediaManagement />} />
             <Route path="/settings" element={<AdminSettings />} />
           </Routes>

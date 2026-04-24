@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
@@ -7,9 +7,22 @@ import Logo from "../assets/logo.png";
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [dbServices, setDbServices] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services");
+        const data = await res.json();
+        setDbServices(data);
+      } catch (err) {
+        console.error("Navbar services fetch error:", err);
+      }
+    };
+    fetchServices();
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -17,12 +30,11 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setIsOpen(false);
+    setShowDropdown(false);
   }, [location]);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -33,8 +45,13 @@ export const Navbar = () => {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Services", href: "/services" },
     { name: "About", href: "/about" },
+    { 
+      name: "Services", 
+      href: "/services",
+      dropdown: dbServices.map(s => ({ name: s.title, href: `/services/${s.id}` }))
+    },
+    { name: "Projects", href: "/projects" },
     { name: "Courses", href: "/courses" },
     { name: "Contact", href: "/contact" },
   ];
@@ -49,20 +66,62 @@ export const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex justify-between items-center">
         
-        {/* Logo Section - Shrinks slightly on mobile to save space */}
         <Link to="/" className="flex items-center gap-2 md:gap-3 z-[110]">
           <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden shadow-sm">
             <img src={Logo} alt="Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-lg md:text-xl font-black text-blue-600 italic tracking-tighter leading-none">
+          <span className="text-lg md:text-xl font-black text-blue-600 italic tracking-tighter leading-none uppercase">
             BLUESTONE <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-blue-600">TECHPARK</span>
           </span>
         </Link>
 
-        {/* Desktop Menu - Hidden on mobile */}
+        {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-1 lg:space-x-4">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.href;
+            const isActive = location.pathname === link.href || (link.dropdown && link.dropdown.some(d => location.pathname === d.href));
+            
+            if (link.dropdown && link.dropdown.length > 0) {
+              return (
+                <div 
+                  key={link.name}
+                  className="relative group py-2"
+                  onMouseEnter={() => setShowDropdown(true)}
+                  onMouseLeave={() => setShowDropdown(false)}
+                >
+                  <Link
+                    to={link.href}
+                    className="flex items-center gap-1 px-3 py-2 text-[11px] lg:text-xs font-black uppercase tracking-[0.2em] transition-colors"
+                  >
+                    <span className={isActive ? "text-blue-600" : "text-slate-900 group-hover:text-blue-600"}>
+                      {link.name}
+                    </span>
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${showDropdown ? "rotate-180" : ""}`} />
+                  </Link>
+
+                  <AnimatePresence>
+                    {showDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute top-full left-0 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 overflow-hidden"
+                      >
+                        {link.dropdown.map((subItem) => (
+                          <Link
+                            key={subItem.href}
+                            to={subItem.href}
+                            className="block px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={link.name}
@@ -90,11 +149,9 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        {/* Mobile Menu Button - High Z-index to stay above menu */}
         <button
           className="md:hidden z-[110] p-2 text-slate-900 bg-white/50 backdrop-blur-sm rounded-full"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle Menu"
         >
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -107,41 +164,41 @@ export const Navbar = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white z-[100] md:hidden"
+            className="fixed inset-0 bg-white z-[100] md:hidden overflow-y-auto"
           >
-            {/* Background Decorative Element */}
-            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[30%] bg-blue-50 rounded-full blur-[100px] opacity-60" />
-
-            <div className="flex flex-col justify-center h-full px-10 space-y-5 relative z-10">
+            <div className="flex flex-col pt-32 pb-20 px-10 space-y-6">
               {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.name}
-                  initial={{ x: -30, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.05 }}
-                >
+                <div key={link.name}>
                   <Link
                     to={link.href}
-                    className={`text-xl font-black uppercase tracking-tighter block ${
+                    className={`text-2xl font-black uppercase tracking-tighter block mb-2 ${
                       location.pathname === link.href ? "text-blue-600" : "text-slate-900"
                     }`}
                   >
                     {link.name}
                   </Link>
-                </motion.div>
+                  
+                  {link.dropdown && (
+                    <div className="pl-4 space-y-3 border-l-2 border-slate-100">
+                      {link.dropdown.map(sub => (
+                        <Link
+                          key={sub.href}
+                          to={sub.href}
+                          className="block text-sm font-bold text-slate-400 uppercase tracking-widest hover:text-blue-600"
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               
-              <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                transition={{ delay: 0.4 }}
-                className="pt-10 border-t border-slate-100"
-              >
-                <p className="text-slate-400 text-xs uppercase tracking-widest mb-4">Start your journey</p>
+              <div className="pt-10 border-t border-slate-100">
                 <Link to="/contact" className="text-2xl text-blue-600 font-black italic flex items-center gap-2">
                   ENROLL <span className="text-3xl">→</span>
                 </Link>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         )}

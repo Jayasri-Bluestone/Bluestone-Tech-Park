@@ -11,6 +11,8 @@ import {
   Code,
 } from "lucide-react";
 
+import IMG_8599 from "../assets/IMG_8599.jpg";
+
 // --- SUB-COMPONENTS (MEMOIZED) ---
 
 const OrbitalIcon = memo(({ item, index, total, activeCard, setActiveCard }) => {
@@ -89,7 +91,7 @@ export const Hero = () => {
     }));
   }, [dbData]);
 
-  const bgImage = heroPrimary?.image_url || heroPrimary?.image_data;
+  const bgImage = heroPrimary?.image_url || heroPrimary?.image_data || IMG_8599;
 
   return (
     <motion.div 

@@ -1,16 +1,17 @@
 import React from 'react';
 import { Trash2, ArrowRightCircle, MessageSquare, AlertCircle } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import { Pagination, API_BASE } from './Common/AdminUtils';
 
-export const AdminEnquiry = ({ leads, refresh }) => {
+export const AdminEnquiry = ({ leads, refresh, pagination, setPagination }) => {
   // Filter only contact form submissions
   const enquiries = leads.filter(l => l.form_type === 'CONTACT_FORM');
 
   // 1. The actual API logic
   const executeAction = async (id, type) => {
     const url = type === 'move' 
-      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/move/${id}`
-      : `https://bluestoneinternationalpreschool.com/techpark_api/api/enquiry/${id}`;
+      ? `${API_BASE}/api/enquiry/move/${id}`
+      : `${API_BASE}/api/enquiry/${id}`;
     
     const method = type === 'move' ? 'PATCH' : 'DELETE';
     const loadingToast = toast.loading(type === 'move' ? "Approving lead..." : "Deleting...");
@@ -153,6 +154,12 @@ export const AdminEnquiry = ({ leads, refresh }) => {
             ))}
           </tbody>
         </table>
+
+        <Pagination 
+          currentPage={pagination.page} 
+          totalPages={pagination.totalPages} 
+          onPageChange={(page) => setPagination(prev => ({ ...prev, page }))} 
+        />
 
         {/* Empty State */}
         {enquiries.length === 0 && (

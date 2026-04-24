@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Lock, User, Save, Eye, EyeOff } from 'lucide-react';
+import { API_BASE } from './Common/AdminUtils';
 
 export const AdminSettings = () => {
     const [username, setUsername] = useState("");
@@ -9,7 +10,7 @@ export const AdminSettings = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/admin/profile")
+        fetch(`${API_BASE}/api/admin/profile`)
             .then(res => res.json())
             .then(data => setUsername(data.username));
     }, []);
@@ -22,7 +23,7 @@ export const AdminSettings = () => {
 
         setLoading(true);
         try {
-            const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/admin/update", {
+            const res = await fetch(`${API_BASE}/api/admin/update`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, newPassword })

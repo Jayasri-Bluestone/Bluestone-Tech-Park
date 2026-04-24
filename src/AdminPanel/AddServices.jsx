@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Upload, Search, Trash2, Loader2, Edit3, X, Plus } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { Pagination, StatusToggle, API_BASE } from './Common/AdminUtils';
 
 export const AddServices = () => {
   const initialForm = {
@@ -15,15 +16,18 @@ export const AddServices = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  
-  // --- NEW STATE FOR EDITING ---
   const [editingId, setEditingId] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
-  const fetchServices = async () => {
+
+
+  const fetchServices = async (page = 1) => {
     try {
-      const res = await fetch("https://bluestoneinternationalpreschool.com/techpark_api/api/services");
-      const data = await res.json();
-      setServices(data);
+      setLoading(true);
+      const res = await fetch(`${API_BASE}/api/services?page=${page}&limit=10&admin=true`);
+      const result = await res.json();
+      setServices(result.data);
+      setPagination(result.pagination);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -31,7 +35,23 @@ export const AddServices = () => {
     }
   };
 
-  useEffect(() => { fetchServices(); }, []);
+  useEffect(() => { fetchServices(pagination.page); }, [pagination.page]);
+
+  const handleStatusToggle = async (id, newStatus) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/services/status/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus ? 1 : 0 })
+      });
+      if (res.ok) {
+        setServices(services.map(s => s.id === id ? { ...s, status: newStatus ? 1 : 0 } : s));
+        toast.success("Status updated");
+      }
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
+  };
 
   // --- ACTIVATE EDIT MODE ---
   const startEdit = (service) => {
@@ -73,8 +93,8 @@ export const AddServices = () => {
     
     // Dynamic URL and Method
     const url = isEditing 
-      ? `https://bluestoneinternationalpreschool.com/techpark_api/api/services/${editingId}` 
-      : "https://bluestoneinternationalpreschool.com/techpark_api/api/services";
+      ? `${API_BASE}/api/services/${editingId}` 
+      : `${API_BASE}/api/services`;
     const method = isEditing ? "PUT" : "POST";
 
     try {
@@ -98,7 +118,7 @@ export const AddServices = () => {
     if (!window.confirm("Are you sure?")) return;
     const deletingToast = toast.loading("Deleting...");
     try {
-      const res = await fetch(`https://bluestoneinternationalpreschool.com/techpark_api/api/services/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/api/services/${id}`, { method: 'DELETE' });
       if (res.ok) {
         toast.success("Service removed", { id: deletingToast });
         setServices(services.filter(s => s.id !== id));
@@ -205,45 +225,77 @@ export const AddServices = () => {
         </div>
       </div>
 
-      {/* --- MANAGEMENT SECTION --- */}
-      <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
+      {/* --- MANAGEMENT TABLE SECTION --- */}
+      <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden">
         <h2 className="text-2xl font-black text-slate-800 mb-6 italic uppercase tracking-tighter">Manage Existing Services</h2>
         {loading ? (
           <div className="flex justify-center p-10"><Loader2 className="animate-spin text-blue-600" /></div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map(service => {
-              const Icon = LucideIcons[service.icon_name] || LucideIcons.Globe;
-              return (
-                <div key={service.id} className={`group relative p-4 rounded-3xl border transition-all ${editingId === service.id ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-100 hover:border-blue-200'}`}>
-                  <div className="h-32 w-full mb-4 rounded-2xl overflow-hidden bg-slate-200">
-                    <img src={service.image_base64} className="w-full h-full object-cover" alt="" />
-                  </div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Icon size={18} className="text-blue-600" />
-                    <h4 className="font-bold text-slate-800 truncate text-sm uppercase">{service.title}</h4>
-                  </div>
-                  
-                  {/* Action Buttons */}
-                  <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                    <button 
-                      onClick={() => startEdit(service)}
-                      className="p-2 bg-blue-600 text-white rounded-xl shadow-lg active:scale-90"
-                      title="Edit Service"
-                    >
-                      <Edit3 size={16} />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(service.id)}
-                      className="p-2 bg-red-500 text-white rounded-xl shadow-lg active:scale-90"
-                      title="Delete Service"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left whitespace-nowrap">
+              <thead>
+                <tr className="bg-slate-50/50">
+                  <th className="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Service</th>
+                  <th className="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">Description</th>
+                  <th className="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Icon</th>
+                  <th className="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Status</th>
+                  <th className="px-8 py-6 text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {services.map((s) => {
+                  const Icon = LucideIcons[s.icon_name] || LucideIcons.Globe;
+                  return (
+                    <tr key={s.id} className="group hover:bg-blue-50/30 transition-all">
+                      <td className="px-8 py-6">
+                        <div className="flex items-center gap-5">
+                          <div className="w-20 h-12 rounded-xl overflow-hidden shadow-md bg-slate-100">
+                            {s.image_base64 && <img src={s.image_base64} alt="" className="w-full h-full object-cover" />}
+                          </div>
+                          <p className="font-black text-slate-900 text-sm uppercase italic">{s.title}</p>
+                        </div>
+                      </td>
+                      <td className="px-8 py-6">
+                        <p className="text-slate-500 text-xs max-w-[300px] truncate font-medium">{s.description}</p>
+                      </td>
+                      <td className="px-8 py-6 text-center">
+                        <div className="inline-flex p-2 bg-blue-50 text-blue-600 rounded-lg">
+                          <Icon size={18} />
+                        </div>
+                      </td>
+                      <td className="px-8 py-6 text-center">
+                        <StatusToggle 
+                          status={s.status} 
+                          onToggle={(newStatus) => handleStatusToggle(s.id, newStatus)} 
+                        />
+                      </td>
+                      <td className="px-8 py-6">
+                        <div className="flex gap-3 justify-center">
+                          <button onClick={() => startEdit(s)} className="p-3 bg-white text-slate-400 rounded-2xl hover:text-blue-600 hover:bg-blue-50 transition-all border border-slate-100 shadow-sm">
+                            <Edit3 size={18}/>
+                          </button>
+                          <button onClick={() => handleDelete(s.id)} className="p-3 bg-white text-slate-400 rounded-2xl hover:text-red-500 hover:bg-red-50 transition-all border border-slate-100 shadow-sm">
+                            <Trash2 size={18}/>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            
+            <Pagination 
+              currentPage={pagination.page} 
+              totalPages={pagination.totalPages} 
+              onPageChange={(page) => setPagination(prev => ({ ...prev, page }))} 
+            />
+
+            {services.length === 0 && (
+               <div className="p-20 text-center text-slate-300 uppercase italic font-black text-sm tracking-widest">
+                  No services published yet
+               </div>
+            )}
           </div>
         )}
       </div>

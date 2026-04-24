@@ -2,6 +2,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wifi, Coffee, Users, Monitor } from "lucide-react";
 
+// Import live assets
+import IMG_8599 from "../assets/IMG_8599.jpg";
+import IMG_8604 from "../assets/IMG_8604.jpg";
+import IMG_8622 from "../assets/IMG_8622.jpg";
+
 const getIcon = (index) => {
   const icons = [
     <Wifi className="w-8 h-8" />,
@@ -25,13 +30,15 @@ export const TechParkFeatures = () => {
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0) {
-          const formatted = data.map((item, index) => ({
-            // If your DB title is NULL (as seen in your snippet), we provide fallbacks
-            title: getDefaultTitle(index),
-            description: getDefaultDesc(index),
-            icon: getIcon(index),
-            image: item.image_url || item.image_data 
-          }));
+          const formatted = data.map((item, index) => {
+            const fallbacks = [IMG_8599, IMG_8604, IMG_8622];
+            return {
+              title: getDefaultTitle(index),
+              description: getDefaultDesc(index),
+              icon: getIcon(index),
+              image: item.image_url || item.image_data || fallbacks[index % fallbacks.length]
+            };
+          });
           setDbFeatures(formatted);
         }
       } catch (error) {

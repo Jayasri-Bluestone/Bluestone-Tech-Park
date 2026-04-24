@@ -305,7 +305,7 @@ useEffect(() => {
                 title="Office Location"
                 className="transition-all duration-700"
               ></iframe>
-              
+
               <div className="absolute top-4 right-4 z-10">
                 <div className="bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-lg border border-blue-50">
                   <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-2">
